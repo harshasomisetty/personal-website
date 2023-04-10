@@ -9,6 +9,25 @@
   dependencies:
     regenerator-runtime "^0.13.11"
 
+"@carbon/icon-helpers@^10.39.0":
+  version "10.39.0"
+  resolved "https://registry.yarnpkg.com/@carbon/icon-helpers/-/icon-helpers-10.39.0.tgz#a1dfd75397a399892af488963ea1187c218861d5"
+  integrity sha512-iFWIfjKABjusb+gUz6s0FdEBHe8Ms63CKDxozhtiSZ9LfF9X5QQztO8df3szqcNsmw30pYhSnm+zJwifO9tdRw==
+
+"@carbon/icons-react@^11.17.0":
+  version "11.17.0"
+  resolved "https://registry.yarnpkg.com/@carbon/icons-react/-/icons-react-11.17.0.tgz#c7b5ed20b3917eb2b202913412b48a18c4b17f13"
+  integrity sha512-PheX1aGh12mfybHeLB9w8Y8UzARuqpVanJ3zTDCUQKfPFaOezAt+6E9lqjj5xq3QgpyZcrCEOFiaPV90n3MqGQ==
+  dependencies:
+    "@carbon/icon-helpers" "^10.39.0"
+    "@carbon/telemetry" "0.1.0"
+    prop-types "^15.7.2"
+
+"@carbon/telemetry@0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@carbon/telemetry/-/telemetry-0.1.0.tgz#57b331cd5a855b4abbf55457456da8211624d879"
+  integrity sha512-kNWt0bkgPwGW0i5h7HFuljbKRXPvIhsKbB+1tEURAYLXoJg9iJLF1eGvWN5iVoFCS2zje4GR3OGOsvvKVe7Hlg==
+
 "@eslint-community/eslint-utils@^4.2.0":
   version "4.4.0"
   resolved "https://registry.yarnpkg.com/@eslint-community/eslint-utils/-/eslint-utils-4.4.0.tgz#a23514e8fb9af1269d5f7788aa556798d61c6b59"
@@ -278,6 +297,11 @@
   dependencies:
     "@typescript-eslint/types" "5.57.1"
     eslint-visitor-keys "^3.3.0"
+
+"@vercel/analytics@^0.1.11":
+  version "0.1.11"
+  resolved "https://registry.yarnpkg.com/@vercel/analytics/-/analytics-0.1.11.tgz#727a0ac655a4a89104cdea3e6925476470299428"
+  integrity sha512-mj5CPR02y0BRs1tN3oZcBNAX9a8NxsIUl9vElDPcqxnMfP0RbRc9fI9Ud7+QDg/1Izvt5uMumsr+6YsmVHcyuw==
 
 acorn-jsx@^5.3.2:
   version "5.3.2"
@@ -1908,7 +1932,7 @@ prelude-ls@^1.2.1:
   resolved "https://registry.yarnpkg.com/prelude-ls/-/prelude-ls-1.2.1.tgz#debc6489d7a6e6b0e7611888cec880337d316396"
   integrity sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==
 
-prop-types@^15.8.1:
+prop-types@^15.7.2, prop-types@^15.8.1:
   version "15.8.1"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.8.1.tgz#67d87bf1a694f48435cf332c24af10214a3140b5"
   integrity sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg==
