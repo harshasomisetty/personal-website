@@ -9,7 +9,7 @@ const about = () => {
   return (
     <>
       Blending my skills in building and insatiable curiosity to unravel the
-      world's mysteries
+      world&apos;s mysteries
     </>
   );
 };
@@ -17,7 +17,7 @@ const aboutMore = () => {
   return (
     <>
       I build projects and document my progress, work as a software engineer @
-      Solana labs, and am a Rutgers '23 grad.
+      Solana labs, and am a Rutgers &apos;23 grad.
     </>
   );
 };
@@ -42,7 +42,7 @@ export default function Home() {
       <p className="hidden sm:flex my-5 max-w-[600px] text-neutral-800 dark:text-neutral-200">
         {aboutMore()}
       </p>
-      <ul className="hidden sm:flex flex flex-col md:flex-row mt-8 space-x-0 md:space-x-4 space-y-2 md:space-y-0 font-sm text-neutral-500 dark:text-neutral-400">
+      <ul className="hidden sm:flex flex-col md:flex-row mt-8 space-x-0 md:space-x-4 space-y-2 md:space-y-0 font-sm text-neutral-500 dark:text-neutral-400">
         <li>
           <a
             className="flex items-center hover:text-neutral-700 dark:hover:text-neutral-200 transition-all"

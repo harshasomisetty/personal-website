@@ -22,23 +22,23 @@ interface PlatformInfo {
 
 const PLATFORMS: Record<Platform, PlatformInfo> = {
   [Platform.Github]: {
-    icon: <LogoGithub size={40} />,
+    icon: <LogoGithub size={32} />,
     linkText: "https://www.github.com/harshasomisetty",
   },
   [Platform.Linkedin]: {
-    icon: <LogoLinkedin size={40} />,
+    icon: <LogoLinkedin size={32} />,
     linkText: "https://www.linkedin.com/in/harshasomisetty",
   },
   [Platform.Twitter]: {
-    icon: <LogoTwitter size={40} />,
+    icon: <LogoTwitter size={32} />,
     linkText: "https://www.twitter.com/HarshaSomisetty",
   },
   [Platform.Instagram]: {
-    icon: <LogoInstagram size={40} />,
+    icon: <LogoInstagram size={32} />,
     linkText: "https://www.instagram.com/harshasomisetty",
   },
   [Platform.Youtube]: {
-    icon: <LogoYoutube size={40} />,
+    icon: <LogoYoutube size={32} />,
     linkText: "https://www.youtube.com/@harshasomisetty",
   },
 };

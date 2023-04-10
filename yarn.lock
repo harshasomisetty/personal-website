@@ -218,6 +218,11 @@
   dependencies:
     tslib "^2.4.0"
 
+"@types/carbon__icons-react@^11.16.0":
+  version "11.16.0"
+  resolved "https://registry.yarnpkg.com/@types/carbon__icons-react/-/carbon__icons-react-11.16.0.tgz#91d1da492a5985883d0859e64fe63f0bc461f2bf"
+  integrity sha512-vmNWdtv2D/Lve2giSZ6XYVSJLxoB5pmGAGWI4DdDgvpr4RJmu72Kf3Wy+LbyaJBOPuYlfQWa/X1LWmdqjAyXOw==
+
 "@types/json5@^0.0.29":
   version "0.0.29"
   resolved "https://registry.yarnpkg.com/@types/json5/-/json5-0.0.29.tgz#ee28707ae94e11d2b827bcbe5270bcea7f3e71ee"

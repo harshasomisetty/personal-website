@@ -20,7 +20,9 @@ const navItems = {
   "/explorations": {
     name: "Explorations",
   },
-  "/notes": {},
+  "/notes": {
+    name: "Notes",
+  },
 };
 
 export default function Navbar() {
@@ -43,7 +45,7 @@ export default function Navbar() {
             {Object.entries(navItems).map(([path, { name }]) => {
               const isActive = path === pathname;
 
-              if (name === "notes") {
+              if (name === "Notes") {
                 return (
                   <a
                     key={path}
