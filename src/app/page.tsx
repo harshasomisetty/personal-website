@@ -2,15 +2,18 @@ import Image from "next/image";
 
 import { Inter } from "next/font/google";
 import { Platform, SocialLink } from "@/app/components/Socials";
+import { ProjectCard } from "@/app/components/Projects";
 
 const inter = Inter({ subsets: ["latin"] });
 
 const about = () => {
+  return <>creative explorer and documenter</>;
+};
+const aboutMore = () => {
   return (
     <>
-      hi, i'm Harsha, a creative explorer and documenter. i work on projects and
-      document my progress, work as a software engineer @ solana labs, and a
-      rutgers '23 grad.
+      i work on projects and document my progress, work as a software engineer @
+      solana labs, and a rutgers '23 grad.
     </>
   );
 };
@@ -30,15 +33,16 @@ export const bio = () => {
 };
 
 export default function Home() {
-  console.log("tesst");
-  console.log("home platform", Platform.Github);
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
       <h1 className="font-bold text-3xl font-serif">Harsha Somisetty</h1>
       <p className="my-5 max-w-[460px] text-neutral-800 dark:text-neutral-200">
         {about()}
       </p>
-      <p className="my-5 max-w-[600px] text-neutral-800 dark:text-neutral-200">
+      <p className="hidden sm:flex my-5 max-w-[600px] text-neutral-800 dark:text-neutral-200">
+        {aboutMore()}
+      </p>
+      <p className="hidden sm:flex my-5 max-w-[600px] text-neutral-800 dark:text-neutral-200">
         {bio()}
       </p>
       <div className="flex flex-row">
@@ -47,6 +51,10 @@ export default function Home() {
         <SocialLink platform={Platform.Twitter} />
         <SocialLink platform={Platform.Youtube} />
         <SocialLink platform={Platform.Instagram} />
+      </div>
+      <div>
+        <ProjectCard projectName="TwitBlog" />
+        <ProjectCard projectName="Checkra" />
       </div>
     </main>
   );
