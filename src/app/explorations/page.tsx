@@ -5,6 +5,7 @@ export default function ExplorationsPage() {
     <section>
       <h1 className="font-bold text-3xl font-serif">Explorations</h1>
       <div>
+        <ProjectCard projectName="PerpetualsExchange" />
         <ProjectCard projectName="TwitBlog" />
         <ProjectCard projectName="Checkra" />
       </div>
