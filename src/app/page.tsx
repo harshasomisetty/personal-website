@@ -1,44 +1,41 @@
 import Image from "next/image";
 
 import { Inter } from "next/font/google";
-import { Platform, SocialLink } from "@/app/components/Socials";
+import { Platform, SocialLink } from "../components/Socials";
+import { avatar } from "@/lib/info";
 
 const inter = Inter({ subsets: ["latin"] });
 
 const about = () => {
-  return (
-    <>
-      Blending my skills in building and insatiable curiosity to unravel the
-      world&apos;s mysteries
-    </>
-  );
+  return <>Channeling the ultimate generalist</>;
 };
 const aboutMore = () => {
   return (
     <>
-      I build projects and document my progress, work as a software engineer @
-      Solana labs, and am a Rutgers &apos;23 grad.
+      I create projects and document my progress, work as a software engineer @
+      Solana labs, and am a Rutgers &apos;23 grad
     </>
   );
 };
 
-export default function Home() {
+export default function HomePage() {
+  //
   return (
-    <section className="flex min-h-screen flex-col items-center justify-between p-24">
+    <section>
       <h1 className="font-bold text-3xl font-serif">Harsha Somisetty</h1>
       <p className="my-5 max-w-[460px] text-neutral-800 dark:text-neutral-200">
         {about()}
       </p>
-      <div className="flex items-start md:items-center my-8 flex-col md:flex-row">
-        {/* <Image
+      {/* <div className="flex items-start md:items-center my-8 flex-col md:flex-row">
+        <Image
           alt={"Harsha Somisetty"}
-          className="rounded-full grayscale"
+          className="rounded-full"
           src={avatar}
           placeholder="blur"
-          width={100}
+          width={400}
           priority
-        /> */}
-      </div>
+        />
+      </div> */}
       <p className="hidden sm:flex my-5 max-w-[600px] text-neutral-800 dark:text-neutral-200">
         {aboutMore()}
       </p>

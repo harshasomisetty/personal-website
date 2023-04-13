@@ -1,11 +1,11 @@
 const bio = () => {
   return (
     <>
-      I&apos;m obsessed with exploring new ideas and diving into various
-      passions, with interests ranging from technology, fitness, and personal
-      growth to acting, theater, storytelling, and dancing. As I continue to
-      learn and create, my mission is to inspire others to follow their unique
-      paths and embrace continuous growth.
+      Obsessed with exploring new ideas and diving into various passions, with
+      interests ranging from technology, fitness, and personal growth to acting,
+      theater, storytelling, and dancing. As I continue to learn and create, my
+      mission is to inspire others to follow their unique paths and embrace
+      continuous growth.
     </>
   );
 };
