@@ -14,7 +14,7 @@ interface ProjectCardProps {
 export const ProjectCard = (props: Props) => {
   const project = projectsData[props.projectName];
   return (
-    <div className="flex flex-col border-2 rounded border-white antialiased m-2 p-2 w-96 space-y-3">
+    <div className="flex flex-col border-2 rounded border-white antialiased m-2 p-2 w-full space-y-3">
       <h3 className="font-semibold">{project.title}</h3>
       <p className="">{project.description}</p>
       <p className="text-sm">{project.tech}</p>

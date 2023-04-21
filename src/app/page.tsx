@@ -22,20 +22,22 @@ export default function HomePage() {
   //
   return (
     <section>
-      <h1 className="font-bold text-3xl font-serif">Harsha Somisetty</h1>
-      <p className="my-5 max-w-[460px] text-neutral-800 dark:text-neutral-200">
-        {about()}
-      </p>
-      {/* <div className="flex items-start md:items-center my-8 flex-col md:flex-row">
+      <h1 className="font-bold text-3xl font-serif text-center sm:text-start">
+        Harsha Somisetty
+      </h1>
+      <div className="flex items-center md:items-center my-8 flex-col md:flex-row">
         <Image
           alt={"Harsha Somisetty"}
           className="rounded-full"
           src={avatar}
           placeholder="blur"
-          width={400}
+          width={100}
           priority
         />
-      </div> */}
+      </div>
+      <p className="my-5 max-w-[460px] text-neutral-800 dark:text-neutral-200 text-center sm:text-start">
+        {about()}
+      </p>
       <p className="hidden sm:flex my-5 max-w-[600px] text-neutral-800 dark:text-neutral-200">
         {aboutMore()}
       </p>
@@ -51,12 +53,12 @@ export default function HomePage() {
           </a>
         </li>
       </ul>
-      <div className="md:hidden flex flex-row">
-        <SocialLink platform={Platform.Github} />
-        <SocialLink platform={Platform.Linkedin} />
-        <SocialLink platform={Platform.Twitter} />
-        <SocialLink platform={Platform.Youtube} />
+      <div className="md:hidden flex flex-col">
         <SocialLink platform={Platform.Instagram} />
+        <SocialLink platform={Platform.Youtube} />
+        <SocialLink platform={Platform.Github} />
+        <SocialLink platform={Platform.Twitter} />
+        <SocialLink platform={Platform.Linkedin} />
       </div>
     </section>
   );

@@ -11,7 +11,7 @@ export const routes = {
   "/explorations": {
     name: "Explorations",
   },
-  "/notes": {
-    name: "Notes",
-  },
+  // "/notes": {
+  //   name: "Notes",
+  // },
 };
