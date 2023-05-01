@@ -1,20 +1,28 @@
-import Navbar from "../components/Navbar";
-import "./globals.css";
-import { Analytics } from "@vercel/analytics/react";
+import Navbar from '@/components/Navbar';
+import './globals.css';
+import { Analytics } from '@vercel/analytics/react';
 
 export const metadata = {
   title: {
-    default: "Harsha Somisetty",
-    template: "%s | Harsha Somisetty",
+    default: 'Harsha Somisetty',
+    template: '%s | Harsha Somisetty',
   },
-  description: "Harsha's Hub",
+  description: "Harsha's personal website",
   openGraph: {
-    title: "Harsha Somisetty",
-    description: "Harsha's Hub",
-    url: "https://harshasomisetty.me",
-    siteName: "Harsha Somisetty",
-    locale: "en-US",
-    type: "website",
+    title: 'Harsha Somisetty',
+    description: "Harsha's personal website",
+    url: 'https://harsha.so',
+    siteName: 'Harsha Somisetty',
+    locale: 'en-US',
+    type: 'website',
+    images: [
+      {
+        url: 'https://harsha.so/avatar.jpg', // Replace with the URL of a relevant Open Graph image
+        width: 1200,
+        height: 630,
+        alt: 'Harsha Profile Picture',
+      },
+    ],
   },
   robots: {
     index: true,
@@ -22,14 +30,14 @@ export const metadata = {
     googleBot: {
       index: true,
       follow: true,
-      "max-video-preview": -1,
-      "max-image-preview": "large",
-      "max-snippet": -1,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
     },
   },
   twitter: {
-    title: "Harsha Somisetty",
-    card: "summary_large_image",
+    title: 'Harsha Somisetty',
+    card: 'summary_large_image',
   },
 };
 

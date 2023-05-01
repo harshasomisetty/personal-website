@@ -1,3 +1,3 @@
-import me from "../avatar.jpg";
+import me from '@/public/avatar.jpg';
 
 export const avatar = me;
