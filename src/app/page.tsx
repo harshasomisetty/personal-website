@@ -1,10 +1,10 @@
-import Image from "next/image";
+import Image from 'next/image';
 
-import { Inter } from "next/font/google";
-import { Platform, SocialLink } from "../components/Socials";
-import { avatar } from "@/lib/info";
+import { Inter } from 'next/font/google';
+import { Platform, SocialLink } from '../components/Socials';
+import { avatar } from '@/lib/info';
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ['latin'] });
 
 const about = () => {
   return <>Channeling the ultimate generalist</>;
@@ -27,7 +27,7 @@ export default function HomePage() {
       </h1>
       <div className="flex items-center md:items-center my-8 flex-col md:flex-row">
         <Image
-          alt={"Harsha Somisetty"}
+          alt={'Harsha Somisetty'}
           className="rounded-full"
           src={avatar}
           placeholder="blur"
@@ -54,8 +54,8 @@ export default function HomePage() {
         </li>
       </ul>
       <div className="md:hidden flex flex-col">
-        <SocialLink platform={Platform.Instagram} />
         <SocialLink platform={Platform.Youtube} />
+        <SocialLink platform={Platform.Instagram} />
         <SocialLink platform={Platform.Github} />
         <SocialLink platform={Platform.Twitter} />
         <SocialLink platform={Platform.Linkedin} />
