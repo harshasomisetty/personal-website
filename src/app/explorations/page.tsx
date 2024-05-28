@@ -1,4 +1,4 @@
-import { ProjectCard } from "../../components/Projects";
+import { ProjectCard } from '@/components/Projects';
 
 export default function ExplorationsPage() {
   return (

@@ -1,8 +1,10 @@
-import LogoGithub from '@carbon/icons-react/lib/LogoGithub';
-import LogoInstagram from '@carbon/icons-react/lib/LogoInstagram';
-import LogoLinkedin from '@carbon/icons-react/lib/LogoLinkedin';
-import LogoTwitter from '@carbon/icons-react/lib/LogoTwitter';
-import LogoYoutube from '@carbon/icons-react/lib/LogoYoutube';
+import {
+  LogoGithub,
+  LogoInstagram,
+  LogoLinkedin,
+  LogoTwitter,
+  LogoYoutube,
+} from '@carbon/icons-react';
 import { ReactNode } from 'react';
 import { FaSpotify } from 'react-icons/fa';
 
