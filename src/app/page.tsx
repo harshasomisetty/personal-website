@@ -1,13 +1,13 @@
 import Image from 'next/image';
 
+import { avatar } from '@/lib/info';
 import { Inter } from 'next/font/google';
 import { Platform, SocialLink } from '../components/Socials';
-import { avatar } from '@/lib/info';
 
 const inter = Inter({ subsets: ['latin'] });
 
 const about = () => {
-  return <>Creating Context X Building Tech</>;
+  return <>Travel, Tech</>;
 };
 const aboutMore = () => {
   return (
@@ -35,18 +35,19 @@ export default function HomePage() {
           priority
         />
       </div>
-      <p className="my-5 max-w-[460px] text-neutral-800 dark:text-neutral-200 text-center sm:text-start">
+      {/* <p className="my-5 max-w-[460px] text-neutral-800 dark:text-neutral-200 text-center sm:text-start">
         {about()}
-      </p>
+      </p> */}
       {/* <p className="hidden sm:flex my-5 max-w-[600px] text-neutral-800 dark:text-neutral-200">
         {aboutMore()}
       </p> */}
       <div className="flex flex-col w-full">
         <SocialLink platform={Platform.Youtube} />
         <SocialLink platform={Platform.Instagram} />
-        <SocialLink platform={Platform.Github} />
         <SocialLink platform={Platform.Twitter} />
+        <SocialLink platform={Platform.Spotify} />
         <SocialLink platform={Platform.Linkedin} />
+        <SocialLink platform={Platform.Github} />
       </div>
     </section>
   );

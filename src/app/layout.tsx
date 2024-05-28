@@ -1,6 +1,6 @@
 import Navbar from '@/components/Navbar';
-import './globals.css';
 import { Analytics } from '@vercel/analytics/react';
+import './globals.css';
 
 export const metadata = {
   title: {
@@ -17,7 +17,7 @@ export const metadata = {
     type: 'website',
     images: [
       {
-        url: 'https://harsha.so/avatar.jpg', // Replace with the URL of a relevant Open Graph image
+        url: 'https://harsha.so/avatar.jpg',
         width: 1200,
         height: 630,
         alt: 'Harsha Profile Picture',

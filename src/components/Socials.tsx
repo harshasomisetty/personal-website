@@ -1,11 +1,10 @@
-import React, { ReactNode } from 'react';
-// import { FaInstagram, FaRegEnvelope } from "react-icons/fa";
-// import { FiTwitter, FiLinkedin, FiGithub } from "react-icons/fi";
-import LogoYoutube from '@carbon/icons-react/lib/LogoYoutube';
-import LogoTwitter from '@carbon/icons-react/lib/LogoTwitter';
-import LogoLinkedin from '@carbon/icons-react/lib/LogoLinkedin';
 import LogoGithub from '@carbon/icons-react/lib/LogoGithub';
 import LogoInstagram from '@carbon/icons-react/lib/LogoInstagram';
+import LogoLinkedin from '@carbon/icons-react/lib/LogoLinkedin';
+import LogoTwitter from '@carbon/icons-react/lib/LogoTwitter';
+import LogoYoutube from '@carbon/icons-react/lib/LogoYoutube';
+import { ReactNode } from 'react';
+import { FaSpotify } from 'react-icons/fa';
 
 export enum Platform {
   Github = 'github',
@@ -13,6 +12,7 @@ export enum Platform {
   Twitter = 'twitter',
   Instagram = 'instagram',
   Youtube = 'youtube',
+  Spotify = 'spotify',
 }
 
 interface PlatformInfo {
@@ -46,6 +46,12 @@ const PLATFORMS: Record<Platform, PlatformInfo> = {
     icon: <LogoYoutube size={32} />,
     linkText: 'https://www.youtube.com/@harshasomisetty',
     title: 'Youtube',
+  },
+  [Platform.Spotify]: {
+    icon: <FaSpotify size={32} />,
+    linkText:
+      'https://open.spotify.com/user/njz4vojmcht4ubqtqm95336le?si=fadf22c08fae475a',
+    title: 'Spotify',
   },
 };
 
