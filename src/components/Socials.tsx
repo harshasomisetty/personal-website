@@ -2,7 +2,7 @@ import {
   LogoGithub,
   LogoInstagram,
   LogoLinkedin,
-  LogoTwitter,
+  LogoX,
   LogoYoutube,
 } from '@carbon/icons-react';
 import { ReactNode } from 'react';
@@ -11,7 +11,7 @@ import { FaSpotify } from 'react-icons/fa';
 export enum Platform {
   Github = 'github',
   Linkedin = 'linkedin',
-  Twitter = 'twitter',
+  X = 'x',
   Instagram = 'instagram',
   Youtube = 'youtube',
   Spotify = 'spotify',
@@ -34,10 +34,10 @@ export const PLATFORMS: Record<Platform, PlatformInfo> = {
     linkText: 'https://www.linkedin.com/in/harshasomisetty',
     title: 'Linkedin',
   },
-  [Platform.Twitter]: {
-    icon: <LogoTwitter size={32} />,
-    linkText: 'https://www.twitter.com/HarshaSomisetty',
-    title: 'Twitter',
+  [Platform.X]: {
+    icon: <LogoX size={32} />,
+    linkText: 'https://www.x.com/HarshaSomisetty',
+    title: 'X',
   },
   [Platform.Instagram]: {
     icon: <LogoInstagram size={32} />,
@@ -61,7 +61,7 @@ interface Props {
   platform: Platform;
 }
 
-export const SocialLink = (props: Props) => {
+export function SocialLink(props: Props) {
   const platformInfo = PLATFORMS[props.platform];
   return (
     <a
@@ -78,4 +78,4 @@ export const SocialLink = (props: Props) => {
       </div>
     </a>
   );
-};
+}

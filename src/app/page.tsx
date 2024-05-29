@@ -1,8 +1,8 @@
 import Image from 'next/image';
 
+import { Platform, SocialLink } from '@/components/Socials';
 import { avatar } from '@/lib/info';
 import { Inter } from 'next/font/google';
-import { Platform, SocialLink } from '../components/Socials';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -44,7 +44,7 @@ export default function HomePage() {
       <div className="flex flex-col w-full">
         <SocialLink platform={Platform.Youtube} />
         <SocialLink platform={Platform.Instagram} />
-        <SocialLink platform={Platform.Twitter} />
+        <SocialLink platform={Platform.X} />
         <SocialLink platform={Platform.Spotify} />
         <SocialLink platform={Platform.Linkedin} />
         <SocialLink platform={Platform.Github} />
