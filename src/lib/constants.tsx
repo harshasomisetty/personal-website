@@ -1,16 +1,16 @@
 export const routes = {
-  "/": {
-    name: "Home",
+  '/': {
+    name: 'Home',
   },
-  "/about": {
-    name: "About",
+  '/about': {
+    name: 'About',
   },
-  "/blog": {
-    name: "Blog",
-  },
-  "/explorations": {
-    name: "Explorations",
-  },
+  // "/blog": {
+  //   name: "Blog",
+  // },
+  // "/explorations": {
+  //   name: "Explorations",
+  // },
   // "/notes": {
   //   name: "Notes",
   // },

@@ -1,8 +1,9 @@
 const bio = () => {
   return (
     <>
-      Learning topics I consider fun, and using my tech skills/historical tilt
-      to approach these topics from a unique angle.
+      I currently work as a software engineer at Solana Labs, where I build 0 to
+      1 startup products. Absolutely love tech, and once you get to know me,
+      you&apos;ll see how it pervades my life.
     </>
   );
 };
@@ -10,13 +11,10 @@ const bio = () => {
 const background = () => {
   return (
     <>
-      I work as a software engineer where my job is build out products from
-      start to end. Before that, I finsihed up Rutgers&#39;23, where I triple
-      majored in math, comp sci, and stats, then spent ~2 years exploring art,
-      dancing, history, theater, music, religion, philosophy, and poli sci.
-      After immersing myself in the logical and creative, surveying the
-      connections between subjects, and thinking about the future, I&#39;m in a
-      spot to start sharing my takeaways with the world.
+      I graduated from Rutgers&apos;23, where I triple majored in Math, Computer
+      Science, and Statistics in 2.5 years. Then spent the rest of college
+      studying acting, history, music, religion, philosophy, poli sci, and even
+      dancing.
     </>
   );
 };
@@ -24,8 +22,10 @@ const background = () => {
 const website = () => {
   return (
     <>
-      This website will serve as a portfolio of what I explore, and a place to
-      dig deeper into my thoughts on these explorations.
+      I&apos;ve achieved most of the goals my younger self set for himself. Now
+      with the freedom of adulthood, I&apos;m in the process of reorienting what
+      I want from life. Will hopefully use this place to fleshout what exactly
+      that is.
     </>
   );
 };
