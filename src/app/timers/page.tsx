@@ -38,10 +38,21 @@ export default function TimersPage() {
   const fetchTimers = async () => {
     try {
       const response = await fetch('/api/timers');
-      const data = await response.json();
-      setTimers(data);
+      const result = await response.json();
+
+      // Debug logging
+      console.log('Timer response:', result);
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to fetch timers');
+      }
+
+      // Ensure we're handling the new response structure
+      const timers = result.data || [];
+      setTimers(timers);
     } catch (error) {
       console.error('Error fetching timers:', error);
+      setTimers([]);
     } finally {
       setLoading(false);
     }

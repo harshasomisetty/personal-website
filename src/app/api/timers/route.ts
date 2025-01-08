@@ -8,10 +8,29 @@ export async function GET() {
         createdAt: 'desc',
       },
     });
-    return NextResponse.json(timers);
-  } catch (error) {
+
+    console.log('Timers fetched:', {
+      count: timers?.length,
+      firstTimer: timers?.[0],
+    });
+
+    return NextResponse.json({
+      data: timers || [],
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error: any) {
+    console.error('Error in GET /api/timers:', {
+      error,
+      message: error.message,
+      stack: error.stack,
+    });
+
     return NextResponse.json(
-      { error: 'Error fetching timers' },
+      {
+        error: 'Error fetching timers',
+        details:
+          process.env.NODE_ENV === 'development' ? error.message : undefined,
+      },
       { status: 500 },
     );
   }

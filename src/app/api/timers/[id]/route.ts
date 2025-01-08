@@ -37,8 +37,13 @@ export async function PATCH(
       },
     });
 
-    return NextResponse.json(timer);
+    if (!timer) {
+      return NextResponse.json({ error: 'Timer not found' }, { status: 404 });
+    }
+
+    return NextResponse.json({ data: timer });
   } catch (error) {
+    console.error('Timer update error:', error);
     return NextResponse.json(
       { error: 'Error updating timer' },
       { status: 500 },
