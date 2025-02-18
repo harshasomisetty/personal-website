@@ -10,28 +10,30 @@ export default function Navbar() {
   const navItems = [
     { path: '/', name: 'Home' },
     { path: '/about', name: 'About' },
-    { path: '/books', name: 'Books' },
+    // { path: '/books', name: 'Books' },
     // { path: '/writing', name: 'Writing' },
     { path: '/projects', name: 'Projects' },
   ];
 
   return (
-    <aside className="md:w-min md:flex-shrink-0 -mx-4 md:mx-0 md:px-0 font-serif md:mr-8">
+    <aside className="md:w-[150px] flex-none md:min-w-[150px] -mx-4 md:mx-0 md:px-0 font-serif">
       <div className="lg:sticky lg:top-20">
-        <nav className="flex flex-row md:flex-col items-center justify-center px-4 md:px-0 pb-0 fade md:overflow-auto scroll-pr-6 md:relative">
+        <nav className="flex flex-row md:flex-col items-start justify-center px-4 md:px-0 pb-0 md:relative">
           {navItems.map(({ path, name }) => (
             <Link
               key={path}
               href={path}
               className={clsx(
-                'transition-all hover:text-neutral-800 dark:hover:text-neutral-200 flex align-middle',
+                'transition-all hover:text-neutral-800 dark:hover:text-neutral-200 flex align-middle w-full',
                 {
                   'text-neutral-500': path !== pathname,
                   'font-bold': path === pathname,
                 },
               )}
             >
-              <span className="relative py-[5px] px-[10px]">{name}</span>
+              <span className="relative py-[5px] px-[10px] block w-full">
+                {name}
+              </span>
             </Link>
           ))}
         </nav>

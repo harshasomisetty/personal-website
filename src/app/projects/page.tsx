@@ -65,7 +65,7 @@ export default function ExplorationsPage() {
 
   return (
     <PageLayout title="Projects">
-      <div className="grid gap-8 md:grid-cols-2">
+      <div className="grid gap-4 md:gap-6 md:grid-cols-2">
         {Object.entries(projectsData).map(([key, project]) => (
           <Link
             href={
@@ -79,7 +79,7 @@ export default function ExplorationsPage() {
           >
             <Card className="h-full overflow-hidden border-2 hover:border-primary/50 transition-all duration-300 hover:shadow-lg dark:hover:shadow-primary/20">
               {project.image && (
-                <div className="relative w-full h-56 overflow-hidden bg-black/10">
+                <div className="relative w-full aspect-[16/9] overflow-hidden bg-black/10">
                   <Image
                     src={
                       project.image.startsWith('/')
@@ -89,7 +89,8 @@ export default function ExplorationsPage() {
                     alt={`${project.title} preview`}
                     fill
                     className="object-cover transition-transform duration-300 group-hover:scale-105"
-                    priority={key === 'Gameshift'}
+                    priority
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </div>

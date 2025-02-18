@@ -6,8 +6,8 @@ interface PageLayoutProps {
 
 export function PageLayout({ title, description, children }: PageLayoutProps) {
   return (
-    <section className="container max-w-4xl pb-6 space-y-6">
-      <div className="space-y-4">
+    <section className="flex flex-col w-full overflow-hidden">
+      <div className="space-y-4 mb-6">
         <h1 className="scroll-m-20 text-4xl font-bold tracking-tight">
           {title}
         </h1>
@@ -15,7 +15,7 @@ export function PageLayout({ title, description, children }: PageLayoutProps) {
           <p className="text-lg text-muted-foreground">{description}</p>
         )}
       </div>
-      {children}
+      <div className="w-full overflow-hidden">{children}</div>
     </section>
   );
 }
