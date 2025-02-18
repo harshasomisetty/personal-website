@@ -1,22 +1,27 @@
 import { BookCard } from '@/components/books/BookCard';
-import { getFavoriteBooks } from '@/lib/books';
+import { PageLayout } from '@/components/PageLayout';
+import { allBooks } from 'contentlayer/generated';
 
 export default function BooksPage() {
-  const books = getFavoriteBooks();
-
-  console.log('Rendering books page with:', books);
-
   return (
-    <main className="container py-6 space-y-8">
-      <h1 className="scroll-m-20 text-4xl font-bold tracking-tight">
-        My Book Rankings
-      </h1>
-
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {books.map((book, index) => (
-          <BookCard key={book.id} rank={index + 1} book={book} />
-        ))}
+    <PageLayout
+      title="Books"
+      description="A collection of books I've read and my thoughts on them."
+    >
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {allBooks
+          .sort((a, b) => {
+            if (a.dateRead && b.dateRead) {
+              return (
+                new Date(b.dateRead).getTime() - new Date(a.dateRead).getTime()
+              );
+            }
+            return 0;
+          })
+          .map((book) => (
+            <BookCard key={book.slug} book={book} />
+          ))}
       </div>
-    </main>
+    </PageLayout>
   );
 }

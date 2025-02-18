@@ -1,5 +1,6 @@
-import { Markdown } from '@/components/Markdown';
-import { getBookBySlug } from '@/lib/books';
+import { Mdx } from '@/components/mdx';
+import { allBooks } from 'contentlayer/generated';
+import { notFound } from 'next/navigation';
 
 interface BookPageProps {
   params: {
@@ -8,7 +9,11 @@ interface BookPageProps {
 }
 
 export default function BookPage({ params }: BookPageProps) {
-  const { book, content } = getBookBySlug(params.slug);
+  const book = allBooks.find((book) => book.slug === params.slug);
+
+  if (!book) {
+    notFound();
+  }
 
   console.log('Rendering book page:', book.title);
 
@@ -31,7 +36,7 @@ export default function BookPage({ params }: BookPageProps) {
         </div>
       </div>
 
-      <Markdown content={content} />
+      <Mdx code={book.body.code} tweets={{}} />
     </main>
   );
 }
