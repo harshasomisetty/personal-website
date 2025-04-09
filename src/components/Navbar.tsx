@@ -10,8 +10,8 @@ export default function Navbar() {
   const navItems = [
     { path: '/', name: 'Home' },
     { path: '/about', name: 'About' },
+    { path: '/blog', name: 'Blog' },
     // { path: '/books', name: 'Books' },
-    // { path: '/writing', name: 'Writing' },
     { path: '/projects', name: 'Projects' },
   ];
 
