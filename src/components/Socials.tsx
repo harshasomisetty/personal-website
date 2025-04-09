@@ -6,7 +6,6 @@ import {
   LogoYoutube,
 } from '@carbon/icons-react';
 import { ReactNode } from 'react';
-import { FaSpotify } from 'react-icons/fa';
 
 export enum Platform {
   Github = 'github',
@@ -14,7 +13,6 @@ export enum Platform {
   X = 'x',
   Instagram = 'instagram',
   Youtube = 'youtube',
-  Spotify = 'spotify',
 }
 
 interface PlatformInfo {
@@ -48,12 +46,6 @@ export const PLATFORMS: Record<Platform, PlatformInfo> = {
     icon: <LogoYoutube size={32} />,
     linkText: 'https://www.youtube.com/@harshasomisetty',
     title: 'Youtube',
-  },
-  [Platform.Spotify]: {
-    icon: <FaSpotify size={32} />,
-    linkText:
-      'https://open.spotify.com/user/njz4vojmcht4ubqtqm95336le?si=fadf22c08fae475a',
-    title: 'Spotify',
   },
 };
 

@@ -45,7 +45,6 @@ export default function HomePage() {
         <SocialLink platform={Platform.Youtube} />
         <SocialLink platform={Platform.Instagram} />
         <SocialLink platform={Platform.X} />
-        <SocialLink platform={Platform.Spotify} />
         <SocialLink platform={Platform.Linkedin} />
         <SocialLink platform={Platform.Github} />
       </div>
