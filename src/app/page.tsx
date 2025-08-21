@@ -42,9 +42,10 @@ export default function HomePage() {
         {aboutMore()}
       </p> */}
       <div className="flex flex-col w-full">
-        <SocialLink platform={Platform.Youtube} />
         <SocialLink platform={Platform.Instagram} />
+        <SocialLink platform={Platform.Tiktok} />
         <SocialLink platform={Platform.X} />
+        <SocialLink platform={Platform.Youtube} />
         <SocialLink platform={Platform.Linkedin} />
         <SocialLink platform={Platform.Github} />
       </div>

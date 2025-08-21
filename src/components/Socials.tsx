@@ -5,6 +5,7 @@ import {
   LogoX,
   LogoYoutube,
 } from '@carbon/icons-react';
+import { FaTiktok } from 'react-icons/fa';
 import { ReactNode } from 'react';
 
 export enum Platform {
@@ -13,6 +14,7 @@ export enum Platform {
   X = 'x',
   Instagram = 'instagram',
   Youtube = 'youtube',
+  Tiktok = 'tiktok',
 }
 
 interface PlatformInfo {
@@ -46,6 +48,11 @@ export const PLATFORMS: Record<Platform, PlatformInfo> = {
     icon: <LogoYoutube size={32} />,
     linkText: 'https://www.youtube.com/@harshasomisetty',
     title: 'Youtube',
+  },
+  [Platform.Tiktok]: {
+    icon: <FaTiktok size={32} />,
+    linkText: 'https://www.tiktok.com/@harshasomisetty7',
+    title: 'TikTok',
   },
 };
 
