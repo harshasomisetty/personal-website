@@ -44,6 +44,7 @@ export default function HomePage() {
       <div className="flex flex-col w-full">
         <SocialLink platform={Platform.Instagram} />
         <SocialLink platform={Platform.Tiktok} />
+        <SocialLink platform={Platform.Substack} />
         <SocialLink platform={Platform.X} />
         <SocialLink platform={Platform.Youtube} />
         <SocialLink platform={Platform.Linkedin} />

@@ -7,6 +7,7 @@ import {
 } from '@carbon/icons-react';
 import { ReactNode } from 'react';
 import { FaTiktok } from 'react-icons/fa';
+import { SiSubstack } from 'react-icons/si';
 
 export enum Platform {
   Github = 'github',
@@ -15,6 +16,7 @@ export enum Platform {
   Instagram = 'instagram',
   Youtube = 'youtube',
   Tiktok = 'tiktok',
+  Substack = 'substack',
 }
 
 interface PlatformInfo {
@@ -53,6 +55,11 @@ export const PLATFORMS: Record<Platform, PlatformInfo> = {
     icon: FaTiktok({ size: 32 }),
     linkText: 'https://www.tiktok.com/@harshasomisetty7',
     title: 'TikTok',
+  },
+  [Platform.Substack]: {
+    icon: SiSubstack({ size: 32 }),
+    linkText: 'https://substack.com/@harshasomisetty',
+    title: 'Substack',
   },
 };
 
