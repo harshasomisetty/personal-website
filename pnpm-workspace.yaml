@@ -1,0 +1,6 @@
+allowBuilds:
+  '@carbon/icon-helpers': true
+  '@carbon/icons-react': true
+  contentlayer: true
+  esbuild: true
+  protobufjs: true

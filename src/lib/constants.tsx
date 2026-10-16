@@ -5,9 +5,6 @@ export const routes = {
   '/about': {
     name: 'About',
   },
-  '/timers': {
-    name: 'Timers',
-  },
   // "/blog": {
   //   name: "Blog",
   // },

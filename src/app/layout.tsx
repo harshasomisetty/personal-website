@@ -1,18 +1,19 @@
 import Navbar from '@/components/Navbar';
-import { Analytics } from '@vercel/analytics/react';
+import { business } from '@/lib/business';
+import Link from 'next/link';
 import './globals.css';
 
 export const metadata = {
   title: {
-    default: 'Harsha Somisetty',
-    template: '%s | Harsha Somisetty',
+    default: `${business.name} | ${business.tagline}`,
+    template: `%s | ${business.name}`,
   },
-  description: "Harsha's personal website",
+  description: `${business.legalName} is a software consulting firm led by ${business.founder}.`,
   openGraph: {
-    title: 'Harsha Somisetty',
-    description: "Harsha's personal website",
-    url: 'https://harsha.so',
-    siteName: 'Harsha Somisetty',
+    title: business.name,
+    description: business.tagline,
+    url: business.url,
+    siteName: business.name,
     locale: 'en-US',
     type: 'website',
     images: [
@@ -20,7 +21,7 @@ export const metadata = {
         url: 'https://harsha.so/avatar.jpg',
         width: 1200,
         height: 630,
-        alt: 'Harsha Profile Picture',
+        alt: business.founder,
       },
     ],
   },
@@ -36,7 +37,7 @@ export const metadata = {
     },
   },
   twitter: {
-    title: 'Harsha Somisetty',
+    title: business.name,
     card: 'summary_large_image',
   },
   verification: {
@@ -58,7 +59,14 @@ export default function RootLayout({
           <Navbar />
           <main className="flex-auto min-w-0 mt-6 md:mt-0 flex flex-col px-2 md:px-0 md:pl-8 w-full overflow-hidden">
             {children}
-            <Analytics />
+            <footer className="mt-16 pt-6 border-t border-neutral-800 text-sm text-neutral-500 flex flex-wrap gap-x-4 gap-y-2">
+              <span>
+                © {new Date().getFullYear()} {business.legalName}
+              </span>
+              <a href={`mailto:${business.email}`}>{business.email}</a>
+              <Link href="/privacy">Privacy</Link>
+              <Link href="/terms">Terms</Link>
+            </footer>
           </main>
         </div>
       </body>

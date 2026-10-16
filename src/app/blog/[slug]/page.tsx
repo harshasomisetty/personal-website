@@ -4,6 +4,10 @@ import { format } from 'date-fns';
 import { notFound } from 'next/navigation';
 import Balancer from 'react-wrap-balancer';
 
+export function generateStaticParams() {
+  return allBlogs.map(({ slug }) => ({ slug }));
+}
+
 export default async function Blog({ params }: any) {
   const post = allBlogs.find((post) => post.slug === params.slug);
 

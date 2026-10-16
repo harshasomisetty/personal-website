@@ -8,6 +8,10 @@ interface BookPageProps {
   };
 }
 
+export function generateStaticParams() {
+  return allBooks.map(({ slug }) => ({ slug }));
+}
+
 export default function BookPage({ params }: BookPageProps) {
   const book = allBooks.find((book) => book.slug === params.slug);
 
