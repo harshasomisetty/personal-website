@@ -5,15 +5,15 @@ import './globals.css';
 
 export const metadata = {
   title: {
-    default: `${business.name} | ${business.tagline}`,
-    template: `%s | ${business.name}`,
+    default: business.founder,
+    template: `%s | ${business.founder}`,
   },
-  description: `${business.legalName} is a software consulting firm led by ${business.founder}.`,
+  description: `${business.founder}, software developer. Founder of ${business.legalName}.`,
   openGraph: {
-    title: business.name,
-    description: business.tagline,
+    title: business.founder,
+    description: `Software developer. Founder of ${business.legalName}.`,
     url: business.url,
-    siteName: business.name,
+    siteName: business.founder,
     locale: 'en-US',
     type: 'website',
     images: [
@@ -37,7 +37,7 @@ export const metadata = {
     },
   },
   twitter: {
-    title: business.name,
+    title: business.founder,
     card: 'summary_large_image',
   },
   verification: {
