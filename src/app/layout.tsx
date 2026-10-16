@@ -39,6 +39,11 @@ export const metadata = {
     title: 'Harsha Somisetty',
     card: 'summary_large_image',
   },
+  verification: {
+    other: {
+      'facebook-domain-verification': 'hxcrualsge1d0lrkki1tja3juwzjan',
+    },
+  },
 };
 
 export default function RootLayout({
