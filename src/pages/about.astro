@@ -1,0 +1,18 @@
+---
+import Prose from '@/components/Prose.astro';
+import Base from '@/layouts/Base.astro';
+import { getEntry, render } from 'astro:content';
+
+const about = await getEntry('pages', 'about');
+if (!about) throw new Error('content/about.mdx is missing');
+const { Content } = await render(about);
+---
+
+<Base title="About">
+  <section class="container max-w-4xl pb-6 space-y-6">
+    <h1 class="scroll-m-20 text-4xl font-bold tracking-tight">
+      {about.data.title}
+    </h1>
+    <Prose><Content /></Prose>
+  </section>
+</Base>

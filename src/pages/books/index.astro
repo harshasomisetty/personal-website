@@ -1,0 +1,35 @@
+---
+import PageHeader from '@/components/PageHeader.astro';
+import Base from '@/layouts/Base.astro';
+import { getCollection } from 'astro:content';
+
+const books = (await getCollection('books')).sort(
+  (a, b) => Date.parse(b.data.dateRead) - Date.parse(a.data.dateRead),
+);
+---
+
+<Base title="Books">
+  <section class="flex flex-col w-full overflow-hidden">
+    <PageHeader
+      title="Books"
+      description="A collection of books I've read and my thoughts on them."
+    />
+    <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      {
+        books.map((book) => (
+          <a href={`/books/${book.id}`}>
+            <div class="rounded-xl border bg-card shadow hover:shadow-lg transition-shadow p-6">
+              <h3 class="text-xl font-semibold mb-4">{book.data.title}</h3>
+              <p class="text-muted-foreground">{book.data.author}</p>
+              <p class="mt-2 text-sm">{book.data.summary}</p>
+              <div class="mt-4 flex gap-2 text-sm text-muted-foreground">
+                <span>Read on {book.data.dateRead}</span>
+                <span>Rating: {book.data.rating}</span>
+              </div>
+            </div>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+</Base>

@@ -1,0 +1,48 @@
+---
+import Base from '@/layouts/Base.astro';
+import { business, socials } from '@/site';
+---
+
+<Base>
+  <section class="flex flex-col items-center">
+    <h1 class="font-bold text-3xl font-serif text-center sm:text-start">
+      {business.founder}
+    </h1>
+    <p class="mt-2 text-neutral-400 text-center">
+      Software developer. I take ideas from 0 to 1.
+    </p>
+    <div class="flex items-center my-8">
+      <img
+        src="/avatar-400.jpg"
+        alt={business.founder}
+        width="100"
+        height="100"
+        class="rounded-full w-[100px] h-[100px] object-cover"
+      />
+    </div>
+    <p class="mb-8 max-w-[460px] text-center text-neutral-200">
+      I run {business.legalName}, a software development and consulting firm.
+      For work inquiries, email{' '}
+      <a href={`mailto:${business.email}`} class="underline underline-offset-4"
+        >{business.email}</a
+      >.
+    </p>
+    <div class="flex flex-col w-full">
+      {
+        socials.map(({ title, href, icon }) => (
+          <a
+            href={href}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="rounded-md mb-3 border border-white transition-all hover:scale-105"
+          >
+            <div class="flex w-full items-center p-1">
+              <span class="size-8 shrink-0" set:html={icon} />
+              <h2 class="flex justify-center items-center w-full">{title}</h2>
+            </div>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+</Base>

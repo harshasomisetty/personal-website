@@ -1,0 +1,31 @@
+---
+import Prose from '@/components/Prose.astro';
+import Base from '@/layouts/Base.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const books = await getCollection('books');
+  return books.map((book) => ({ params: { slug: book.id }, props: { book } }));
+}
+
+const { book } = Astro.props;
+const { Content } = await render(book);
+---
+
+<Base title={book.data.title} description={book.data.summary}>
+  <section class="py-6 space-y-8">
+    <div class="space-y-4">
+      <h1 class="scroll-m-20 text-4xl font-bold tracking-tight">
+        {book.data.title}
+      </h1>
+      <div class="flex gap-2 text-muted-foreground">
+        <span>by {book.data.author}</span>
+        <span>•</span>
+        <span>Read on {book.data.dateRead}</span>
+        <span>•</span>
+        <span>Rating: {book.data.rating}</span>
+      </div>
+    </div>
+    <Prose><Content /></Prose>
+  </section>
+</Base>

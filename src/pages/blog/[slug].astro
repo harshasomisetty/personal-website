@@ -1,0 +1,36 @@
+---
+import Prose from '@/components/Prose.astro';
+import Base from '@/layouts/Base.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+const date = post.data.date.toLocaleDateString('en-US', {
+  month: 'long',
+  day: 'numeric',
+  year: 'numeric',
+  timeZone: 'UTC',
+});
+---
+
+<Base title={post.data.title} description={post.data.summary}>
+  <section>
+    <h1 class="font-bold text-3xl font-serif max-w-[650px] text-balance">
+      {post.data.title}
+    </h1>
+    <div
+      class="grid grid-cols-[auto_1fr_auto] items-center mt-4 mb-8 font-mono text-sm max-w-[650px]"
+    >
+      <div class="bg-neutral-800 rounded-md px-2 py-1 tracking-tighter">
+        {date}
+      </div>
+      <div class="h-[0.2em] bg-neutral-800 mx-2"></div>
+    </div>
+    <Prose><Content /></Prose>
+  </section>
+</Base>

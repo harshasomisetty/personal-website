@@ -1,0 +1,97 @@
+---
+import '@/styles/global.css';
+import { business, facebookDomainVerification, nav } from '@/site';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title,
+  description = `${business.founder}, software developer. Founder of ${business.legalName}.`,
+} = Astro.props;
+const fullTitle = title ? `${title} | ${business.founder}` : business.founder;
+// build.format 'file' gives /about.html and /index.html; normalize to /about and /.
+const path =
+  Astro.url.pathname.replace(/\.html$/, '').replace(/\/(index)?$/, '') || '/';
+const canonical = new URL(path, Astro.site);
+---
+
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <meta property="og:title" content={title ?? business.founder} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:site_name" content={business.founder} />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content={new URL('/avatar.jpg', Astro.site)} />
+    <meta property="og:image:alt" content={business.founder} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title ?? business.founder} />
+    {
+      facebookDomainVerification.map((code) => (
+        <meta name="facebook-domain-verification" content={code} />
+      ))
+    }
+  </head>
+  <body
+    class="antialiased mb-40 flex flex-col md:flex-row mx-4 mt-8 md:mt-20 lg:mt-32 lg:mx-auto"
+  >
+    <div class="max-w-4xl w-full mx-auto flex flex-col md:flex-row">
+      <aside
+        class="md:w-[150px] flex-none md:min-w-[150px] -mx-4 md:mx-0 md:px-0 font-serif"
+      >
+        <div class="lg:sticky lg:top-20">
+          <nav
+            class="flex flex-row md:flex-col items-start justify-center px-4 md:px-0 pb-0 md:relative"
+          >
+            {
+              nav.map(({ href, name }) => {
+                const external = href.startsWith('http');
+                return (
+                  <a
+                    href={href}
+                    class:list={[
+                      'transition-all hover:text-neutral-200 flex align-middle w-full',
+                      href === path ? 'font-bold' : 'text-neutral-500',
+                    ]}
+                    {...(external && {
+                      target: '_blank',
+                      rel: 'noopener noreferrer',
+                    })}
+                  >
+                    <span class="relative py-[5px] px-[10px] block w-full">
+                      {name}
+                    </span>
+                  </a>
+                );
+              })
+            }
+          </nav>
+        </div>
+      </aside>
+      <main
+        class="flex-auto min-w-0 mt-6 md:mt-0 flex flex-col px-2 md:px-0 md:pl-8 w-full overflow-hidden"
+      >
+        <slot />
+        <footer
+          class="mt-16 pt-6 border-t border-neutral-800 text-sm text-neutral-500 flex flex-wrap gap-x-4 gap-y-2"
+        >
+          <span>© {new Date().getFullYear()} {business.legalName}</span>
+          <a href={`mailto:${business.email}`}>{business.email}</a>
+          <a href="/privacy">Privacy</a>
+          <a href="/terms">Terms</a>
+        </footer>
+      </main>
+    </div>
+  </body>
+</html>

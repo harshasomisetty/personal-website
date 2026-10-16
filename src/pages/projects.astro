@@ -1,0 +1,49 @@
+---
+import PageHeader from '@/components/PageHeader.astro';
+import Base from '@/layouts/Base.astro';
+import { projects } from '@/site';
+---
+
+<Base title="Projects">
+  <section class="flex flex-col w-full overflow-hidden">
+    <PageHeader title="Projects" />
+    <div class="grid gap-4 md:gap-6 md:grid-cols-2">
+      {
+        projects.map((project) => (
+          <a
+            href={project.link}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="block group"
+          >
+            <div class="h-full overflow-hidden rounded-xl border-2 bg-card shadow transition-all duration-300 hover:border-neutral-50/50 hover:shadow-lg">
+              <div class="relative w-full aspect-[16/9] overflow-hidden bg-black/10">
+                <img
+                  src={project.image}
+                  alt={`${project.title} preview`}
+                  loading="lazy"
+                  class="absolute inset-0 size-full object-cover transition-transform duration-300 group-hover:scale-105"
+                />
+              </div>
+              <div class="flex items-center justify-between p-6">
+                <h2 class="text-xl font-bold leading-none tracking-tight">
+                  {project.title}
+                </h2>
+                <span class="text-sm opacity-0 group-hover:opacity-100 transition-opacity">
+                  ↗
+                </span>
+              </div>
+              <div class="px-6 pb-6 space-y-4">
+                <p class="text-sm leading-relaxed">{project.description}</p>
+                <div class="text-xs text-muted-foreground space-y-1">
+                  <p class="font-medium uppercase tracking-wider">Tech Stack</p>
+                  <p class="leading-relaxed">{project.tech}</p>
+                </div>
+              </div>
+            </div>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+</Base>

@@ -1,0 +1,89 @@
+---
+import PageHeader from '@/components/PageHeader.astro';
+import Base from '@/layouts/Base.astro';
+import { business, policiesUpdated } from '@/site';
+---
+
+<Base title="Privacy Policy" description={`Privacy policy for ${business.legalName}`}>
+  <section class="flex flex-col w-full overflow-hidden">
+    <PageHeader title="Privacy Policy" description={`Last updated ${policiesUpdated}`} />
+    <div class="prose prose-invert max-w-[650px]">
+        <p>
+          This policy explains how {business.legalName} (&quot;we&quot;,
+          &quot;us&quot;) handles information when you visit {business.url} or
+          contact us.
+        </p>
+
+        <h2>Information we collect</h2>
+        <ul>
+          <li>
+            <strong>Information you send us.</strong> When you email us, we
+            receive your name, email address, and anything you include in the
+            message.
+          </li>
+          <li>
+            <strong>Technical information.</strong> Our hosting and network
+            provider, Cloudflare, processes standard request data such as IP
+            address, browser type, and pages requested, to deliver the site and
+            protect it from abuse.
+          </li>
+        </ul>
+        <p>
+          This site does not use advertising cookies, and it does not ask you to
+          create an account.
+        </p>
+
+        <h2>How we use information</h2>
+        <ul>
+          <li>To reply to you and to provide services you request.</li>
+          <li>To run, secure, and improve this website.</li>
+          <li>To meet legal, tax, and accounting obligations.</li>
+        </ul>
+
+        <h2>Sharing</h2>
+        <p>
+          We do not sell your personal information. We share it only with
+          service providers that help us run the business, such as hosting and
+          email providers, when the law requires it, or with your consent.
+        </p>
+
+        <h2>Retention</h2>
+        <p>
+          We keep correspondence and project records for as long as we need
+          them for the purposes above, or as long as the law requires.
+        </p>
+
+        <h2>Your choices</h2>
+        <p>
+          You can ask us to access, correct, or delete personal information we
+          hold about you. Email {business.email} and we will respond within 30
+          days.
+        </p>
+
+        <h2>Third-party links</h2>
+        <p>
+          This site links to other services, such as LinkedIn, GitHub, and
+          Substack. Their own privacy policies apply when you use them.
+        </p>
+
+        <h2>Children</h2>
+        <p>
+          This site is not directed to children under 13, and we do not
+          knowingly collect their information.
+        </p>
+
+        <h2>Changes</h2>
+        <p>
+          We will post any changes to this policy on this page and update the
+          date above.
+        </p>
+
+        <h2>Contact</h2>
+        <p>
+          {business.legalName}
+          <br />
+          <a href={`mailto:${business.email}`}>{business.email}</a>
+        </p>
+      </div>
+  </section>
+</Base>
