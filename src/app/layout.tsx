@@ -42,7 +42,11 @@ export const metadata = {
   },
   verification: {
     other: {
-      'facebook-domain-verification': 'hxcrualsge1d0lrkki1tja3juwzjan',
+      // One code per domain: harsha.so, harshasomisetty.com.
+      'facebook-domain-verification': [
+        'hxcrualsge1d0lrkki1tja3juwzjan',
+        'uaiupa3wadsils21q6cn8ndl248prf',
+      ],
     },
   },
 };
