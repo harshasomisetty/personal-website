@@ -14,7 +14,7 @@ export const business = {
 };
 
 // Date shown on the privacy and terms pages. Change it when either page changes.
-export const policiesUpdated = 'October 16, 2026';
+export const policiesUpdated = 'October 27, 2026';
 
 // One code per domain: harsha.so, harshasomisetty.com.
 export const facebookDomainVerification = [
