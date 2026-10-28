@@ -46,7 +46,7 @@ export const projects = [
     link: 'https://getfullframe.com',
     description:
       'Creator data management system and AI setter for coaches who sell through Instagram DMs: every lead from post to payment on one screen, replies drafted in the coach\'s voice, and content ranked by the calls it booked',
-    tech: 'Next.js, Typescript, Prisma, Postgres (Supabase), Cloudflare Workers (OpenNext, Hyperdrive), Stripe, LLM drafting agent. Integrates Instagram, Stripe, Fathom, Google Calendar, Gmail.',
+    tech: 'Next.js, TypeScript, Postgres, LLM drafting agent.',
     image: '/fullframe.jpg',
   },
   {
