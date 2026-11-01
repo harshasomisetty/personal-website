@@ -6,8 +6,9 @@ import tiktok from '@/icons/tiktok.svg?raw';
 import x from '@/icons/x.svg?raw';
 import youtube from '@/icons/youtube.svg?raw';
 
-// Home page tagline; also the default meta description.
-export const tagline = 'Completed life at 24. Now trying to be a kid again.';
+// Home page tagline, one line each; joined, it is the default meta description.
+export const taglineLines = ['Completed life at 24.', 'Now trying to be a kid again.'];
+export const tagline = taglineLines.join(' ');
 
 export const business = {
   legalName: 'Harsha Technologies LLC',
@@ -27,12 +28,6 @@ export const facebookDomainVerification = [
   'uaiupa3wadsils21q6cn8ndl248prf',
 ];
 
-export const nav = [
-  { href: '/', name: 'Home' },
-  { href: 'https://substack.com/@harshasomisetty', name: 'Blog' },
-  { href: '/projects', name: 'Projects' },
-];
-
 // Home page order.
 export const socials = [
   { title: 'Instagram', href: 'https://www.instagram.com/harshasomisetty', icon: instagram },
@@ -44,9 +39,11 @@ export const socials = [
   { title: 'Github', href: 'https://www.github.com/harshasomisetty', icon: github },
 ];
 
+// summary = one line on the home page; description + tech = /projects.
 export const projects = [
   {
     title: 'FullFrame',
+    summary: 'CRM and content manager for Instagram',
     link: 'https://getfullframe.com',
     description:
       'Creator data management system and AI setter for coaches who sell through Instagram DMs: every lead from post to payment on one screen, replies drafted in the coach\'s voice, and content ranked by the calls it booked',
@@ -55,6 +52,7 @@ export const projects = [
   },
   {
     title: 'Gameshift',
+    summary: 'Crypto API infrastructure on Solana for game studios',
     link: 'https://gameshift.dev',
     description: 'Crypto API infrastructure on Solana for game studios',
     tech: 'Typescript, Solana, Next.js, Tailwind, Vercel',
@@ -62,6 +60,7 @@ export const projects = [
   },
   {
     title: 'Shopify Solana Pay',
+    summary: 'USDC payments for Shopify, $100M in volume',
     link: 'https://shopifydocs.solanapay.com',
     description:
       "Built a Shopify Payment processor that accepts USDC on Solana, that's done $100M in transaction volume",
@@ -70,6 +69,7 @@ export const projects = [
   },
   {
     title: 'Perpetuals Exchange',
+    summary: 'Low-fee perpetuals exchange on Solana',
     link: 'https://github.com/solana-labs/perpetuals',
     description:
       'Perpetuals Exchange built on Solana, with a focus on low fees and high throughput',
@@ -78,6 +78,7 @@ export const projects = [
   },
   {
     title: 'TwitBlog',
+    summary: 'Twitter thread aggregator',
     link: 'https://youtu.be/jrBStgziAyA',
     description:
       "Twitter Thread Aggregator that identifies all of a User's Threads, and identifies relevant topics",
@@ -86,6 +87,7 @@ export const projects = [
   },
   {
     title: 'Checkra',
+    summary: 'Podcast notes, timestamps, and keywords',
     link: 'https://youtu.be/fUmwLnyFbLY',
     description:
       'Podcast aggregator that creates podcast notes, timestamps, and identifies keywords/entities',

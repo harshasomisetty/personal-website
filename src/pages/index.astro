@@ -1,6 +1,13 @@
 ---
 import Base from '@/layouts/Base.astro';
-import { business, socials, tagline } from '@/site';
+import { business, projects, socials, taglineLines } from '@/site';
+import { getCollection } from 'astro:content';
+
+const posts = (await getCollection('blog')).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
+);
+const monthYear = (d: Date) =>
+  d.toLocaleDateString('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' });
 ---
 
 <Base>
@@ -15,7 +22,9 @@ import { business, socials, tagline } from '@/site';
     <h1 class="mt-6 font-bold text-3xl font-serif text-center">
       {business.founder}
     </h1>
-    <p class="mt-2 text-neutral-400 text-center">{tagline}</p>
+    <p class="mt-2 text-neutral-400 text-center">
+      {taglineLines.map((line) => <span class="block">{line}</span>)}
+    </p>
     <div class="mt-5 flex flex-wrap justify-center gap-4">
       {
         socials.map(({ title, href, icon }) => (
@@ -31,26 +40,65 @@ import { business, socials, tagline } from '@/site';
         ))
       }
     </div>
+  </section>
 
-    <div class="mt-10 max-w-[520px] space-y-4 text-neutral-200 leading-relaxed">
+  <div class="mt-10 w-full max-w-[520px] mx-auto space-y-12">
+    <section class="space-y-3 text-neutral-200 leading-relaxed">
       <p>
-        I was a software engineer at Solana Labs. I built a payments product
-        that processed over $100M through Shopify, and backend infrastructure
-        for on-chain game studios. Before that, I triple majored in Math,
-        Computer Science, and Statistics at Rutgers in 2.5 years.
-      </p>
-      <p>
-        I was very fortunate early in my career, and by 22 I was able to
-        semi-retire. Then I traveled the world. I learned Portuguese in 10
-        days, surfed in Brazil, and sang my first song in Argentina. I went on
-        expeditions to the Arctic and the Antarctic, explored India on my own,
-        and meditated for 10 days without talking, three separate times.
-      </p>
-      <p>
-        Now I'm about to turn 25, and no one ever told me what to do after the
-        success. So I'm doing the only thing I can: trying to be a kid again.
+        <span class="block">Taught myself programming at 16.</span>
+        <span class="block">Worked in tech and semi-retired at 22.</span>
+        <span class="block">Traveled the world and finished my bucket list by 24.</span>
+        <span class="block">Working on the next chapter of life.</span>
       </p>
       <p class="text-neutral-400">Say hi at {business.emailText}.</p>
-    </div>
-  </section>
+    </section>
+
+    <section>
+      <h2 class="mb-3 font-serif text-xl font-bold">Blog</h2>
+      <ul class="space-y-2">
+        {
+          posts.map((post) => (
+            <li>
+              <a
+                href={`/blog/${post.id}`}
+                class="flex items-baseline justify-between gap-4 group"
+              >
+                <span class="text-neutral-200 group-hover:underline underline-offset-4">
+                  {post.data.title}
+                </span>
+                <span class="shrink-0 font-mono text-xs text-neutral-500">
+                  {monthYear(post.data.date)}
+                </span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <section>
+      <h2 class="mb-3 font-serif text-xl font-bold">
+        <a href="/projects" class="hover:underline underline-offset-4">Projects</a>
+      </h2>
+      <ul class="space-y-2">
+        {
+          projects.map((project) => (
+            <li>
+              <a
+                href={project.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="block group"
+              >
+                <span class="text-neutral-200 group-hover:underline underline-offset-4">
+                  {project.title}
+                </span>
+                <span class="text-neutral-500"> · {project.summary}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+  </div>
 </Base>
