@@ -1,6 +1,6 @@
 ---
 import '@/styles/global.css';
-import { business, facebookDomainVerification, nav } from '@/site';
+import { business, facebookDomainVerification, nav, tagline } from '@/site';
 
 interface Props {
   title?: string;
@@ -9,10 +9,10 @@ interface Props {
 
 const {
   title,
-  description = `${business.founder}, software developer. Founder of ${business.legalName}.`,
+  description = `${business.founder}. ${tagline}`,
 } = Astro.props;
 const fullTitle = title ? `${title} | ${business.founder}` : business.founder;
-// build.format 'file' gives /about.html and /index.html; normalize to /about and /.
+// build.format 'file' gives /projects.html and /index.html; normalize to /projects and /.
 const path =
   Astro.url.pathname.replace(/\.html$/, '').replace(/\/(index)?$/, '') || '/';
 const canonical = new URL(path, Astro.site);
@@ -87,7 +87,7 @@ const canonical = new URL(path, Astro.site);
           class="mt-16 pt-6 border-t border-neutral-800 text-sm text-neutral-500 flex flex-wrap gap-x-4 gap-y-2"
         >
           <span>© {new Date().getFullYear()} {business.legalName}</span>
-          <a href={`mailto:${business.email}`}>{business.email}</a>
+          <span>{business.emailText}</span>
           <a href="/privacy">Privacy</a>
           <a href="/terms">Terms</a>
         </footer>

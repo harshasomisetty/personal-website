@@ -22,12 +22,4 @@ const books = defineCollection({
   }),
 });
 
-const pages = defineCollection({
-  loader: glob({ pattern: 'about.mdx', base: './content' }),
-  schema: z.object({
-    title: z.string(),
-    date: z.coerce.date(),
-  }),
-});
-
-export const collections = { blog, books, pages };
+export const collections = { blog, books };

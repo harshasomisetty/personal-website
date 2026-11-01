@@ -6,10 +6,15 @@ import tiktok from '@/icons/tiktok.svg?raw';
 import x from '@/icons/x.svg?raw';
 import youtube from '@/icons/youtube.svg?raw';
 
+// Home page tagline; also the default meta description.
+export const tagline = 'Completed life at 24. Now trying to be a kid again.';
+
 export const business = {
   legalName: 'Harsha Technologies LLC',
   founder: 'Harsha Somisetty',
   email: 'contact@harsha.so',
+  // Shown on the home page and footer instead of a mailto link.
+  emailText: 'contact [at] harsha.so',
   url: 'https://harsha.so',
 };
 
@@ -24,7 +29,6 @@ export const facebookDomainVerification = [
 
 export const nav = [
   { href: '/', name: 'Home' },
-  { href: '/about', name: 'About' },
   { href: 'https://substack.com/@harshasomisetty', name: 'Blog' },
   { href: '/projects', name: 'Projects' },
 ];
@@ -60,7 +64,7 @@ export const projects = [
     title: 'Shopify Solana Pay',
     link: 'https://shopifydocs.solanapay.com',
     description:
-      'Built a Shopify Payment processor that accepts USDC on Solana, thats done 100M in transaction volume',
+      "Built a Shopify Payment processor that accepts USDC on Solana, that's done $100M in transaction volume",
     tech: 'React, Typescript, Solana, Next.js, Tailwind, Vercel',
     image: '/solanapay-shopify.jpg',
   },

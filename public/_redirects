@@ -1,4 +1,5 @@
 # Cloudflare Pages redirects
+/about /                                          301
 /blog  https://substack.com/@harshasomisetty     302
 /ig    https://www.instagram.com/harshasomisetty  302
 /x     https://www.x.com/HarshaSomisetty          302
