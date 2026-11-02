@@ -26,15 +26,18 @@ import { projects } from '@/site';
                 />
               </div>
               <div class="flex items-center justify-between p-6">
-                <h2 class="text-xl font-bold leading-none tracking-tight">
-                  {project.title}
-                </h2>
+                <div>
+                  <h2 class="text-xl font-bold leading-none tracking-tight">
+                    {project.title}
+                  </h2>
+                  <p class="mt-1.5 font-mono text-xs text-muted-foreground">{project.year}</p>
+                </div>
                 <span class="text-sm opacity-0 group-hover:opacity-100 transition-opacity">
                   ↗
                 </span>
               </div>
               <div class="px-6 pb-6 space-y-4">
-                <p class="text-sm leading-relaxed">{project.description}</p>
+                <p class="text-sm leading-relaxed">{project.summary}</p>
                 <div class="text-xs text-muted-foreground space-y-1">
                   <p class="font-medium uppercase tracking-wider">Tech Stack</p>
                   <p class="leading-relaxed">{project.tech}</p>

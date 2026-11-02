@@ -74,7 +74,7 @@ const monthYear = (d: Date) =>
       <h2 class="mb-3 font-serif text-xl font-bold">
         <a href="/projects" class="hover:underline underline-offset-4">Projects</a>
       </h2>
-      <ul class="space-y-2">
+      <ul class="space-y-4">
         {
           projects.map((project) => (
             <li>
@@ -84,10 +84,11 @@ const monthYear = (d: Date) =>
                 rel="noopener noreferrer"
                 class="block group"
               >
-                <span class="text-neutral-200 group-hover:underline underline-offset-4">
+                <span class="block text-neutral-200 group-hover:underline underline-offset-4">
                   {project.title}
                 </span>
-                <span class="text-neutral-500"> · {project.summary}</span>
+                <span class="block font-mono text-xs text-neutral-500">{project.year}</span>
+                <span class="block text-neutral-400">{project.summary}</span>
               </a>
             </li>
           ))

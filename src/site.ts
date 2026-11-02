@@ -43,58 +43,53 @@ export const socials = [
   { title: 'Github', href: 'https://www.github.com/harshasomisetty', icon: github },
 ];
 
-// summary = one line on the home page; description + tech = /projects.
+// summary = the one-line description on the home page and /projects; tech = /projects only.
 export const projects = [
   {
     title: 'FullFrame',
+    year: 2026,
     summary: 'CRM and content manager for Instagram',
     link: 'https://getfullframe.com',
-    description:
-      'Creator data management system and AI setter for coaches who sell through Instagram DMs: every lead from post to payment on one screen, replies drafted in the coach\'s voice, and content ranked by the calls it booked',
     tech: 'Next.js, TypeScript, Postgres, LLM drafting agent.',
     image: '/fullframe.jpg',
   },
   {
     title: 'Gameshift',
-    summary: 'Crypto API infrastructure on Solana for game studios',
+    year: 2024,
+    summary: 'Crypto gaming infrastructure on Solana',
     link: 'https://gameshift.dev',
-    description: 'Crypto API infrastructure on Solana for game studios',
     tech: 'Typescript, Solana, Next.js, Tailwind, Vercel',
     image: '/managed-wallets.jpg',
   },
   {
-    title: 'Shopify Solana Pay',
-    summary: 'USDC payments for Shopify, $100M in volume',
+    title: 'Shopify X Solana',
+    year: 2023,
+    summary: 'Enabling crypto payments for merchants, $100M tx volume',
     link: 'https://shopifydocs.solanapay.com',
-    description:
-      "Built a Shopify Payment processor that accepts USDC on Solana, that's done $100M in transaction volume",
     tech: 'React, Typescript, Solana, Next.js, Tailwind, Vercel',
     image: '/solanapay-shopify.jpg',
   },
   {
-    title: 'Perpetuals Exchange',
-    summary: 'Low-fee perpetuals exchange on Solana',
+    title: 'Perpetuals',
+    year: 2023,
+    summary: 'Low-fee perpetuals on Solana',
     link: 'https://github.com/solana-labs/perpetuals',
-    description:
-      'Perpetuals Exchange built on Solana, with a focus on low fees and high throughput',
     tech: 'React, Typescript, Solana, Rust, Web3, Next.js, Tailwind, Vercel',
     image: '/perps-ui.jpg',
   },
   {
     title: 'TwitBlog',
+    year: 2021,
     summary: 'Twitter thread aggregator',
     link: 'https://youtu.be/jrBStgziAyA',
-    description:
-      "Twitter Thread Aggregator that identifies all of a User's Threads, and identifies relevant topics",
     tech: 'MERN (Mongodb, Express, React, Node), Tailwind, NginX, multi-container Docker architecture, Python Data Processing. Deployed on DigitalOcean.',
     image: '/twit-blog.jpg',
   },
   {
     title: 'Checkra',
+    year: 2020,
     summary: 'Podcast notes, timestamps, and keywords',
     link: 'https://youtu.be/fUmwLnyFbLY',
-    description:
-      'Podcast aggregator that creates podcast notes, timestamps, and identifies keywords/entities',
     tech: 'Full Stack Python for Dataprocessing and Website. Spacy for NLP, Flask/Plotly for Website, Deployed on Heroku.',
     image: '/checkra.jpg',
   },
