@@ -64,7 +64,7 @@ export const projects = [
   {
     title: 'Shopify X Solana',
     year: 2023,
-    summary: 'Enabling crypto payments for merchants, $100M tx volume',
+    summary: 'Crypto payments for merchants, $100M tx volume',
     link: 'https://solana.com/news/solana-pay-shopify',
     tech: 'React, Typescript, Solana, Next.js, Tailwind, Vercel',
     image: '/solanapay-shopify.jpg',

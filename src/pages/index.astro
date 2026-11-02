@@ -84,10 +84,12 @@ const monthYear = (d: Date) =>
                 rel="noopener noreferrer"
                 class="block group"
               >
-                <span class="block text-neutral-200 group-hover:underline underline-offset-4">
-                  {project.title}
+                <span class="flex items-baseline justify-between gap-4">
+                  <span class="text-neutral-200 group-hover:underline underline-offset-4">
+                    {project.title}
+                  </span>
+                  <span class="shrink-0 font-mono text-xs text-neutral-500">{project.year}</span>
                 </span>
-                <span class="block font-mono text-xs text-neutral-500">{project.year}</span>
                 <span class="block text-neutral-400">{project.summary}</span>
               </a>
             </li>
