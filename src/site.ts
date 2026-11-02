@@ -9,9 +9,9 @@ import youtube from '@/icons/youtube.svg?raw';
 // Home page bio and the question under it; together they are the default meta description.
 export const bio = [
   'I thought societal success was all that mattered.',
-  'Then I learned programming at 16, semi-retired at 22, and finished my bucket list at 24.',
+  'So I taught myself programming at 15, triple majored in Math, CS, and Stats at 20, semi-retired at 22, and finished my bucket list at 24.',
 ];
-export const hook = "But now I'm at the part that comes after.";
+export const hook = "But now I'm at the part of life that comes after.";
 export const tagline = [...bio, hook].join(' ');
 
 export const business = {
