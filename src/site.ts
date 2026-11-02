@@ -7,15 +7,15 @@ import x from '@/icons/x.svg?raw';
 import youtube from '@/icons/youtube.svg?raw';
 
 // Home page tagline, one line each; joined, it is the default meta description.
-export const taglineLines = ['Completed life at 24.', 'Now trying to be a kid again.'];
+export const taglineLines = ['Completed my bucket list at 24.', 'So what comes after?'];
 export const tagline = taglineLines.join(' ');
 
 export const business = {
   legalName: 'Harsha Technologies LLC',
   founder: 'Harsha Somisetty',
-  email: 'contact@harsha.so',
+  email: 'contact@harshasomisetty.com',
   // Shown on the home page and footer instead of a mailto link.
-  emailText: 'contact [at] harsha.so',
+  emailText: 'contact [at] harshasomisetty.com',
   url: 'https://harsha.so',
 };
 

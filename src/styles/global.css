@@ -1,8 +1,12 @@
 @import 'tailwindcss';
 @plugin '@tailwindcss/typography';
+@import '@fontsource-variable/source-serif-4/opsz.css';
+@import '@fontsource-variable/source-serif-4/opsz-italic.css';
 
 /* The site is dark only. These match the old shadcn dark palette. */
 @theme {
+  /* One soft serif for all text; dates keep font-mono. */
+  --font-serif: 'Source Serif 4 Variable', ui-serif, Georgia, serif;
   --color-background: hsl(0 0% 3.9%);
   --color-foreground: hsl(0 0% 98%);
   --color-card: hsl(0 0% 3.9%);
@@ -15,6 +19,6 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-serif;
   }
 }
