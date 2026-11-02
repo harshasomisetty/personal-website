@@ -4,7 +4,9 @@ import { bio, business, hook, projects, socials } from '@/site';
 import { getCollection } from 'astro:content';
 
 const posts = (await getCollection('blog')).sort(
-  (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
+  (a, b) =>
+    Number(b.data.pinned) - Number(a.data.pinned) ||
+    b.data.date.valueOf() - a.data.date.valueOf(),
 );
 const monthYear = (d: Date) =>
   d.toLocaleDateString('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' });
@@ -59,7 +61,7 @@ const monthYear = (d: Date) =>
                   {post.data.title}
                 </span>
                 <span class="shrink-0 font-mono text-xs text-neutral-500">
-                  {monthYear(post.data.date)}
+                  {post.data.pinned ? 'Pinned · ' : ''}{monthYear(post.data.date)}
                 </span>
               </a>
             </li>
