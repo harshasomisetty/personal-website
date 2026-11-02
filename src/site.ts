@@ -7,10 +7,12 @@ import x from '@/icons/x.svg?raw';
 import youtube from '@/icons/youtube.svg?raw';
 
 // Home page bio and the question under it; together they are the default meta description.
-export const bio =
-  'I grew up tying my worth to results. I taught myself to code at 16, semi-retired from tech at 22, and finished my bucket list by 24.';
-export const hook = 'So what comes after?';
-export const tagline = `${bio} ${hook}`;
+export const bio = [
+  'I thought societal success was all that mattered.',
+  'Then I learned programming at 16, semi-retired at 22, and finished my bucket list at 24.',
+];
+export const hook = "But now I'm at the part that comes after.";
+export const tagline = [...bio, hook].join(' ');
 
 export const business = {
   legalName: 'Harsha Technologies LLC',
