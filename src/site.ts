@@ -11,7 +11,7 @@ export const bio = [
   'I thought societal success was all that mattered.',
   'So I taught myself to code at 15, triple majored in Math, CS, and Stats at 20, semi-retired at 22, and finished my bucket list at 24.',
 ];
-export const hook = "But after achieving everything I wanted, I'm at the part of life that comes after.";
+export const hook = 'But what comes next?';
 export const tagline = [...bio, hook].join(' ');
 
 export const business = {
