@@ -88,19 +88,43 @@ const stats = [
           <ul class="grid gap-x-6 gap-y-2 sm:grid-cols-2">
             {places
               .filter((p) => p.region === region)
-              .map((p) => (
-                <li class="flex items-baseline gap-2">
-                  <span aria-hidden="true">{p.flag}</span>
-                  <span class="text-neutral-200">{p.name}</span>
-                  {(p.note || (p.territory && p.id !== '010')) && (
-                    <span class="text-sm text-neutral-500">
-                      {[p.note, p.territory && p.id !== '010' && `part of ${p.territory}`]
-                        .filter(Boolean)
-                        .join(' · ')}
-                    </span>
-                  )}
-                </li>
-              ))}
+              .map((p) => {
+                const extra = [
+                  p.cities?.length === 1 && p.cities[0],
+                  p.note,
+                  p.territory && p.id !== '010' && `part of ${p.territory}`,
+                ]
+                  .filter(Boolean)
+                  .join(' · ');
+                return (p.cities?.length ?? 0) > 1 ? (
+                  <li>
+                    <details class="group">
+                      <summary class="flex cursor-pointer list-none items-baseline gap-2 [&::-webkit-details-marker]:hidden">
+                        <span aria-hidden="true">{p.flag}</span>
+                        <span class="text-neutral-200 underline underline-offset-4 decoration-neutral-600 group-hover:decoration-neutral-200">
+                          {p.name}
+                        </span>
+                        <span class="text-sm text-neutral-500">{p.cities!.length} cities</span>
+                        <span
+                          aria-hidden="true"
+                          class="text-xs text-neutral-500 transition-transform group-open:rotate-90"
+                        >
+                          ▸
+                        </span>
+                      </summary>
+                      <ul class="mt-1 mb-2 ml-7 space-y-0.5 text-sm text-neutral-400">
+                        {p.cities!.map((c) => <li>{c}</li>)}
+                      </ul>
+                    </details>
+                  </li>
+                ) : (
+                  <li class="flex items-baseline gap-2">
+                    <span aria-hidden="true">{p.flag}</span>
+                    <span class="text-neutral-200">{p.name}</span>
+                    {extra && <span class="text-sm text-neutral-500">{extra}</span>}
+                  </li>
+                );
+              })}
           </ul>
         </section>
       ))
