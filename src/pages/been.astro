@@ -29,11 +29,13 @@ const dots = places
   .map((p) => ({ name: p.name, xy: projection(p.dot!)! }));
 
 // Timeline: trips grouped by year, newest first. A typo in a trip fails the build.
-const byName = new Map(places.map((p) => [p.name, p]));
+// A trip place is a country (or territory) name, or a city in one of the country lists.
+const placeOf = (n: string) =>
+  places.find((p) => p.name === n) ?? places.find((p) => p.cities?.includes(n));
 for (const t of trips)
-  for (const n of t.places) if (!byName.has(n)) throw new Error(`been.ts trip: unknown place "${n}"`);
+  for (const n of t.places) if (!placeOf(n)) throw new Error(`been.ts trip: unknown place "${n}"`);
 const years = [...new Set(trips.map((t) => t.year))];
-const inTrips = new Set(trips.flatMap((t) => t.places));
+const inTrips = new Set(trips.flatMap((t) => t.places.map((n) => placeOf(n)!.name)));
 const undated = places.filter((p) => !inTrips.has(p.name) && p.name !== 'United States');
 
 const stats = [
@@ -142,7 +144,7 @@ const stats = [
 
   <section class="mt-14">
     <h2 class="mb-1 text-xl font-bold">Timeline</h2>
-    <p class="mb-6 text-sm text-neutral-500">Trips outside the US, from the locations in my photos.</p>
+    <p class="mb-6 text-sm text-neutral-500">Trips from the locations in my photos. Drives near home are not included.</p>
     <div class="relative border-l border-neutral-800 ml-1.5">
       {
         years.map((year) => (
@@ -159,7 +161,10 @@ const stats = [
                         <>
                           {i > 0 && <span class="text-neutral-600"> → </span>}
                           <span class="whitespace-nowrap">
-                            <span aria-hidden="true">{byName.get(n)!.flag}</span> {n}
+                            {(i === 0 || placeOf(t.places[i - 1]) !== placeOf(n)) && (
+                              <span aria-hidden="true">{placeOf(n)!.flag} </span>
+                            )}
+                            {n}
                           </span>
                         </>
                       ))}
