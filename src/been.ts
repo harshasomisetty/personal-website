@@ -36,7 +36,6 @@ export const places: Place[] = [
   { name: 'Italy', id: '380', flag: '🇮🇹', region: 'Europe' },
   { name: 'Norway', id: '578', flag: '🇳🇴', region: 'Europe' },
   { name: 'Svalbard', id: '744', flag: '🇸🇯', region: 'Europe', territory: 'Norway', note: 'Arctic', dot: [16.0, 78.2] },
-  { name: 'Sweden', id: '752', flag: '🇸🇪', region: 'Europe' },
   { name: 'Finland', id: '246', flag: '🇫🇮', region: 'Europe', cities: ['Helsinki'] },
   { name: 'Turkey', id: '792', flag: '🇹🇷', region: 'Asia', cities: ['Istanbul'] },
   { name: 'United Arab Emirates', id: '784', flag: '🇦🇪', region: 'Asia', cities: ['Dubai'] },
