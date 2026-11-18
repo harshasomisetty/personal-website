@@ -7,6 +7,7 @@ import {
   places,
   regions,
   territoryCount,
+  trips,
   worldPercent,
 } from '@/been';
 import { geoEqualEarth, geoPath } from 'd3-geo';
@@ -27,6 +28,14 @@ const shapes = countries.features.map((f: any) => ({
 const dots = places
   .filter((p) => p.dot)
   .map((p) => ({ name: p.name, xy: projection(p.dot!)! }));
+
+// Timeline: trips grouped by year, newest first. A typo in a trip fails the build.
+const byName = new Map(places.map((p) => [p.name, p]));
+for (const t of trips)
+  for (const n of t.places) if (!byName.has(n)) throw new Error(`been.ts trip: unknown place "${n}"`);
+const years = [...new Set(trips.map((t) => t.year))];
+const inTrips = new Set(trips.flatMap((t) => t.places));
+const undated = places.filter((p) => !inTrips.has(p.name) && p.name !== 'United States');
 
 const stats = [
   { value: countryCount, label: 'Countries' },
@@ -84,7 +93,7 @@ const stats = [
     {
       regions.map((region) => (
         <section>
-          <h2 class="mb-3 font-serif text-xl font-bold">{region}</h2>
+          <h2 class="mb-3 text-xl font-bold">{region}</h2>
           <ul class="grid gap-x-6 gap-y-2 sm:grid-cols-2">
             {places
               .filter((p) => p.region === region)
@@ -105,12 +114,13 @@ const stats = [
                           {p.name}
                         </span>
                         <span class="text-sm text-neutral-500">{p.cities!.length} cities</span>
-                        <span
+                        <svg
                           aria-hidden="true"
-                          class="text-xs text-neutral-500 transition-transform group-open:rotate-90"
+                          viewBox="0 0 16 16"
+                          class="size-3 self-center text-neutral-500 transition-transform group-open:rotate-90"
                         >
-                          ▸
-                        </span>
+                          <path d="M6 3l5 5-5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
                       </summary>
                       <ul class="mt-1 mb-2 ml-7 space-y-0.5 text-sm text-neutral-400">
                         {p.cities!.map((c) => <li>{c}</li>)}
@@ -130,4 +140,45 @@ const stats = [
       ))
     }
   </div>
+
+  <section class="mt-14">
+    <h2 class="mb-1 text-xl font-bold">Timeline</h2>
+    <p class="mb-6 text-sm text-neutral-500">Trips outside the US, from the locations in my photos.</p>
+    <div class="relative border-l border-neutral-800 ml-1.5">
+      {
+        years.map((year) => (
+          <div class="mb-6">
+            <p class="mb-3 -ml-px pl-6 font-mono text-sm text-neutral-500">{year}</p>
+            <ul class="space-y-4">
+              {trips
+                .filter((t) => t.year === year)
+                .map((t) => (
+                  <li class="relative pl-6">
+                    <span class="absolute -left-[5px] top-2 size-2.5 rounded-full bg-amber-500" />
+                    <p class="text-neutral-200">
+                      {t.places.map((n, i) => (
+                        <>
+                          {i > 0 && <span class="text-neutral-600"> → </span>}
+                          <span class="whitespace-nowrap">
+                            <span aria-hidden="true">{byName.get(n)!.flag}</span> {n}
+                          </span>
+                        </>
+                      ))}
+                    </p>
+                    <p class="text-sm text-neutral-500">{t.when} {t.year}</p>
+                  </li>
+                ))}
+            </ul>
+          </div>
+        ))
+      }
+    </div>
+    {
+      undated.length > 0 && (
+        <p class="mt-2 text-sm text-neutral-500">
+          Before 2019, dates unknown: {undated.map((p) => p.name).join(', ')}.
+        </p>
+      )
+    }
+  </section>
 </Base>
