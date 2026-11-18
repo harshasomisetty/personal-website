@@ -6,7 +6,6 @@ import {
   countryCount,
   places,
   regions,
-  territoryCount,
   trips,
   worldPercent,
 } from '@/been';
@@ -46,11 +45,11 @@ const stats = [
 
 <Base
   title="Been"
-  description={`The ${countryCount} countries, ${territoryCount} territories, and Antarctica that Harsha Somisetty has been to.`}
+  description={`The ${countryCount} countries and Antarctica that Harsha Somisetty has been to.`}
 >
   <PageHeader
     title="Been"
-    description={`${countryCount} countries, ${territoryCount} territories, and Antarctica.`}
+    description={`${countryCount} countries and Antarctica.`}
   />
 
   <svg
@@ -96,16 +95,16 @@ const stats = [
           <h2 class="mb-3 text-xl font-bold">{region}</h2>
           <ul class="grid gap-x-6 gap-y-2 sm:grid-cols-2">
             {places
-              .filter((p) => p.region === region)
+              .filter((p) => p.region === region && (!p.territory || p.id === '010'))
               .map((p) => {
-                const extra = [
-                  p.cities?.length === 1 && p.cities[0],
-                  p.note,
-                  p.territory && p.id !== '010' && `part of ${p.territory}`,
-                ]
-                  .filter(Boolean)
-                  .join(' · ');
-                return (p.cities?.length ?? 0) > 1 ? (
+                // A territory shows under its country (Puerto Rico under the United States).
+                const subs = [
+                  ...(p.cities ?? []),
+                  ...places
+                    .filter((t) => t.territory === p.name)
+                    .map((t) => (t.note ? `${t.name} (${t.note})` : t.name)),
+                ];
+                return subs.length > 1 ? (
                   <li>
                     <details class="group">
                       <summary class="flex cursor-pointer list-none items-baseline gap-2 [&::-webkit-details-marker]:hidden">
@@ -113,7 +112,7 @@ const stats = [
                         <span class="text-neutral-200 underline underline-offset-4 decoration-neutral-600 group-hover:decoration-neutral-200">
                           {p.name}
                         </span>
-                        <span class="text-sm text-neutral-500">{p.cities!.length} cities</span>
+                        <span class="text-sm text-neutral-500">{subs.length} places</span>
                         <svg
                           aria-hidden="true"
                           viewBox="0 0 16 16"
@@ -123,7 +122,7 @@ const stats = [
                         </svg>
                       </summary>
                       <ul class="mt-1 mb-2 ml-7 space-y-0.5 text-sm text-neutral-400">
-                        {p.cities!.map((c) => <li>{c}</li>)}
+                        {subs.map((c) => <li>{c}</li>)}
                       </ul>
                     </details>
                   </li>
@@ -131,7 +130,7 @@ const stats = [
                   <li class="flex items-baseline gap-2">
                     <span aria-hidden="true">{p.flag}</span>
                     <span class="text-neutral-200">{p.name}</span>
-                    {extra && <span class="text-sm text-neutral-500">{extra}</span>}
+                    {subs[0] && <span class="text-sm text-neutral-500">{subs[0]}</span>}
                   </li>
                 );
               })}

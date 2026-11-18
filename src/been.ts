@@ -35,7 +35,7 @@ export const places: Place[] = [
   { name: 'Switzerland', id: '756', flag: '🇨🇭', region: 'Europe' },
   { name: 'Italy', id: '380', flag: '🇮🇹', region: 'Europe' },
   { name: 'Norway', id: '578', flag: '🇳🇴', region: 'Europe' },
-  { name: 'Svalbard', id: '744', flag: '🇸🇯', region: 'Europe', territory: 'Norway', note: 'The Arctic', dot: [16.0, 78.2] },
+  { name: 'Svalbard', id: '744', flag: '🇸🇯', region: 'Europe', territory: 'Norway', note: 'Arctic', dot: [16.0, 78.2] },
   { name: 'Sweden', id: '752', flag: '🇸🇪', region: 'Europe' },
   { name: 'Finland', id: '246', flag: '🇫🇮', region: 'Europe', cities: ['Helsinki'] },
   { name: 'Turkey', id: '792', flag: '🇹🇷', region: 'Asia', cities: ['Istanbul'] },
@@ -85,6 +85,5 @@ export const trips: { when: string; year: number; places: string[] }[] = [
 // UN member states (193) + the two observer states.
 const worldCountries = 195;
 export const countryCount = places.filter((p) => !p.territory).length;
-export const territoryCount = places.filter((p) => p.territory && p.id !== '010').length;
 export const worldPercent = Math.round((countryCount / worldCountries) * 100);
 export const continentCount = new Set(places.map((p) => p.region)).size;
