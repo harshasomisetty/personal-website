@@ -1,0 +1,109 @@
+---
+import PageHeader from '@/components/PageHeader.astro';
+import Base from '@/layouts/Base.astro';
+import {
+  continentCount,
+  countryCount,
+  places,
+  regions,
+  territoryCount,
+  worldPercent,
+} from '@/been';
+import { geoEqualEarth, geoPath } from 'd3-geo';
+import { feature } from 'topojson-client';
+import world from 'world-atlas/countries-110m.json';
+
+// The map renders to a static SVG at build time; the page ships no map JavaScript.
+const width = 960;
+const height = 470;
+const countries = feature(world as any, (world as any).objects.countries) as any;
+const projection = geoEqualEarth().fitSize([width, height], countries);
+const path = geoPath(projection).digits(1);
+const visited = new Set(places.map((p) => p.id));
+const shapes = countries.features.map((f: any) => ({
+  d: path(f),
+  visited: visited.has(f.id),
+}));
+const dots = places
+  .filter((p) => p.dot)
+  .map((p) => ({ name: p.name, xy: projection(p.dot!)! }));
+
+const stats = [
+  { value: countryCount, label: 'Countries' },
+  { value: `${worldPercent}%`, label: 'Of the world' },
+  { value: `${continentCount}/7`, label: 'Continents' },
+];
+---
+
+<Base
+  title="Been"
+  description={`The ${countryCount} countries, ${territoryCount} territories, and Antarctica that Harsha Somisetty has been to.`}
+>
+  <PageHeader
+    title="Been"
+    description={`${countryCount} countries, ${territoryCount} territories, and Antarctica.`}
+  />
+
+  <svg
+    viewBox={`0 0 ${width} ${height}`}
+    role="img"
+    aria-label="World map with the visited countries in orange"
+    class="w-full h-auto"
+  >
+    {
+      shapes.map((s: { d: string; visited: boolean }) => (
+        <path
+          d={s.d}
+          class={s.visited ? 'fill-amber-500' : 'fill-neutral-800'}
+          stroke="hsl(0 0% 3.9%)"
+          stroke-width="0.5"
+        />
+      ))
+    }
+    {
+      dots.map(({ name, xy }) => (
+        <circle cx={xy[0]} cy={xy[1]} r="3.5" class="fill-amber-500" stroke="hsl(0 0% 3.9%)" stroke-width="1">
+          <title>{name}</title>
+        </circle>
+      ))
+    }
+  </svg>
+
+  <div class="mt-8 grid grid-cols-3 gap-4 text-center">
+    {
+      stats.map((s) => (
+        <div>
+          <p class="text-3xl font-bold text-amber-500">{s.value}</p>
+          <p class="mt-1 text-sm text-neutral-500">{s.label}</p>
+        </div>
+      ))
+    }
+  </div>
+
+  <div class="mt-12 space-y-10">
+    {
+      regions.map((region) => (
+        <section>
+          <h2 class="mb-3 font-serif text-xl font-bold">{region}</h2>
+          <ul class="grid gap-x-6 gap-y-2 sm:grid-cols-2">
+            {places
+              .filter((p) => p.region === region)
+              .map((p) => (
+                <li class="flex items-baseline gap-2">
+                  <span aria-hidden="true">{p.flag}</span>
+                  <span class="text-neutral-200">{p.name}</span>
+                  {(p.note || (p.territory && p.id !== '010')) && (
+                    <span class="text-sm text-neutral-500">
+                      {[p.note, p.territory && p.id !== '010' && `part of ${p.territory}`]
+                        .filter(Boolean)
+                        .join(' · ')}
+                    </span>
+                  )}
+                </li>
+              ))}
+          </ul>
+        </section>
+      ))
+    }
+  </div>
+</Base>
