@@ -57,13 +57,12 @@ const canonical = new URL(path, Astro.site);
           )
         }
         <slot />
-        <footer
-          class="mt-16 pt-6 border-t border-neutral-800 text-sm text-neutral-500 flex flex-wrap gap-x-4 gap-y-2"
-        >
+        <footer class="mt-16 pt-5 border-t border-neutral-800 flex gap-x-3 whitespace-nowrap text-xs text-neutral-600">
           <span>© {new Date().getFullYear()} {business.legalName}</span>
-          <span>{business.emailText}</span>
-          <a href="/privacy">Privacy</a>
-          <a href="/terms">Terms</a>
+          <span aria-hidden="true">·</span>
+          <a href="/privacy" class="hover:text-neutral-300">Privacy</a>
+          <span aria-hidden="true">·</span>
+          <a href="/terms" class="hover:text-neutral-300">Terms</a>
         </footer>
       </main>
     </div>
