@@ -4,6 +4,8 @@
 Run: python3 tools/flighty.py   (reads a copy; the app database is never opened for writing)
 """
 import glob, json, os, shutil, sqlite3, tempfile, time
+from datetime import datetime
+from zoneinfo import ZoneInfo
 from collections import Counter
 from pathlib import Path
 
@@ -28,7 +30,7 @@ where u.userId = ? and u.deleted is null and m.deleted is null and not m.isCance
 '''
 now = time.time()
 flights = [r for r in db.execute(q, (me, me)) if r[4] < now]
-airports = {r[0]: r[1:] for r in db.execute('select id, iata, city, latitude, longitude, countryCode from Airport')}
+airports = {r[0]: r[1:] for r in db.execute('select id, iata, city, latitude, longitude, countryCode, timeZoneIdentifier from Airport')}
 airlines = {r[0]: r[1] for r in db.execute('select id, name from Airline')}
 
 routes = Counter(tuple(sorted((airports[d][0], airports[a][0]))) for d, a, *_ in flights)
@@ -52,8 +54,8 @@ out = {
     'points': {v[0]: [round(v[3], 3), round(v[2], 3)] for k, v in airports.items() if v[0] in visits},  # [lon, lat]
     'country': {v[0]: v[4] for v in airports.values() if v[0] in visits},  # ISO alpha-2 per airport
     'routes': len(routes),
-    # Every flight in date order, for the route replay: [from, to, 'YYYY-MM-DD'].
-    'log': [[airports[d][0], airports[a][0], time.strftime('%Y-%m-%d', time.gmtime(t))]
+    # Every flight in date order, for the route replay: [from, to, 'YYYY-MM-DD' local departure date].
+    'log': [[airports[d][0], airports[a][0], datetime.fromtimestamp(t, ZoneInfo(airports[d][5] or 'UTC')).strftime('%Y-%m-%d')]
             for d, a, _, _, t, _ in sorted(flights, key=lambda r: r[4])],
 }
 OUT.write_text(json.dumps(out, indent=1, ensure_ascii=False) + '\n')
