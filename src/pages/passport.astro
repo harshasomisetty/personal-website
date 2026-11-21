@@ -3,7 +3,7 @@ import Stamp from '@/components/Stamp.astro';
 import Base from '@/layouts/Base.astro';
 import { continentCount, countryCount, places, regions, trips, voyages } from '@/been';
 import flights from '@/flights.json';
-import { geoArea, geoBounds, geoContains, geoEqualEarth, geoGraticule10, geoPath } from 'd3-geo';
+import { geoArea, geoBounds, geoContains, geoDistance, geoEqualEarth, geoGraticule10, geoPath } from 'd3-geo';
 import { feature } from 'topojson-client';
 import world from 'world-atlas/countries-110m.json';
 import world10 from 'world-atlas/countries-10m.json';
@@ -75,7 +75,9 @@ const boats = voyages
   .map((v) => ({
     d: path({ type: 'LineString', coordinates: v.boat } as any),
     delay: `${pos(day(v.date))}ms`,
-    end: projection(v.boat!.at(-1)!)!,
+    // The boat sits at the point farthest from the start: on a round trip the last point is the
+    // home port, and a boat there hides the route.
+    end: projection(v.boat!.reduce((a, b) => (geoDistance(v.boat![0], b) > geoDistance(v.boat![0], a) ? b : a)))!,
     // The boat shows when the line is drawn.
     shown: `${pos(day(v.date)) + DRAW - 200}ms`,
   }));
@@ -292,7 +294,7 @@ const highlight =
             boats.map((b) => (
               <>
                 <path d={b.d} class="fly" style={`--d:${b.delay}`} pathLength="1" fill="none" stroke="#7dd3fc" stroke-width="1.5" stroke-linecap="round" />
-                <g class="pop" style={`--d:${b.shown}`} transform={`translate(${b.end[0].toFixed(1)} ${b.end[1].toFixed(1)})`} fill="#7dd3fc">
+                <g class="pop" style={`--d:${b.shown}`} transform={`translate(${b.end[0].toFixed(1)} ${b.end[1].toFixed(1)}) scale(0.6)`} fill="#7dd3fc">
                   <path d="M-6 1h12l-2.5 3.5h-7z" />
                   <path d="M-0.6 -8h1.2v8.5h-1.2z" />
                   <path d="M1 -7.5l4.5 6h-4.5z" />

@@ -59,6 +59,7 @@ export const places: Place[] = [
 // Trips from photo GPS data (2019 on) and Flighty, oldest first in this list. places = country, territory,
 // or city names from the lists above, in visit order. US drives near home are left out.
 export const trips: { when: string; year: number; places: string[] }[] = [
+  { year: 2017, when: 'Jul – Aug', places: ['United Arab Emirates', 'India'] }, // from Flighty: Dubai Jul 29 – Aug 1, then Hyderabad
   { year: 2018, when: 'Jul', places: ['Seattle', 'Alaska', 'Victoria'] }, // from Flighty; no GPS photos
   { year: 2019, when: 'Aug', places: ['United Kingdom', 'Belgium', 'Germany', 'Switzerland', 'Italy', 'France'] },
   { year: 2020, when: 'Jun', places: ['Atlanta', 'Houston'] },
@@ -128,7 +129,14 @@ export const voyages: { date: string; places: string[]; boat?: [number, number][
   { date: '2025-07-13', places: ['The Bahamas', 'Puerto Rico', 'Dominican Republic'], boat: [
     [-80.1, 26.1], [-77.35, 25.1], [-72.0, 22.6], [-66.1, 18.5], [-70.7, 19.85], [-74.5, 23.2], [-80.1, 26.1],
   ] },
-  { date: '2026-06-14', places: ['Svalbard'], boat: [[15.6, 78.25], [11.9, 78.9], [12.5, 80.0]] }, // north from Longyearbyen
+  // Svalbard cruise from Longyearbyen and back, Jun 15–22 (route from photo GPS): up the west coast, along the
+  // north coast to Hinlopen Strait, north to the pack ice (80.7° N), Edgeøya, around Sørkapp to Hornsund, home.
+  { date: '2026-06-15', places: ['Svalbard'], boat: [
+    [15.6, 78.23], [13.6, 78.12], [12.97, 78.16], [11.4, 78.6], [11.7, 79.34], [11.85, 79.12], [12.72, 79.61],
+    [12.42, 79.52], [13.5, 79.85], [16.0, 79.95], [17.5, 79.85], [18.46, 79.59], [16.71, 80.03], [14.5, 80.71],
+    [17.5, 80.1], [18.6, 79.75], [21.08, 79.33], [21.06, 78.21], [20.82, 78.09], [19.5, 77.6], [17.0, 76.3],
+    [15.6, 76.4], [15.3, 77.0], [15.99, 77.08], [14.0, 77.5], [13.3, 78.0], [13.84, 78.21], [15.6, 78.23],
+  ] },
 ];
 
 export const countryCount = places.filter((p) => !p.territory).length;
