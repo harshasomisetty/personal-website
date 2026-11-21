@@ -88,7 +88,7 @@ const heading = 'font-mono text-xs font-semibold uppercase tracking-[0.16em] tex
         <a href="/projects" class="hover:text-neutral-200">Work</a>
         <a href="/projects" class="font-normal normal-case tracking-normal hover:text-neutral-200">All →</a>
       </h2>
-      <ul class="space-y-2">
+      <ul class="space-y-3">
         {
           projects.slice(0, 3).map((project) => (
             <li>
@@ -99,8 +99,8 @@ const heading = 'font-mono text-xs font-semibold uppercase tracking-[0.16em] tex
                 class="flex items-baseline justify-between gap-4 group"
               >
                 <span>
-                  <span class="text-neutral-200 group-hover:underline underline-offset-4">{project.title}</span>
-                  <span class="text-neutral-500"> — {project.summary}</span>
+                  <span class="block text-neutral-200 group-hover:underline underline-offset-4">{project.title}</span>
+                  <span class="block text-[13px] text-neutral-500">{project.summary}</span>
                 </span>
                 <span class="shrink-0 font-mono text-xs text-neutral-500">{project.year}</span>
               </a>
