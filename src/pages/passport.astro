@@ -138,7 +138,9 @@ const lightCss = [...visited]
   .map((id) => {
     const hits = [
       ...log.flatMap(([a, b], i) => (mapId(a) === id || mapId(b) === id ? [at(i)] : [])),
-      ...voyages.filter((v) => places.find((p) => p.name === v.place)?.id === id).map((v) => pos(day(v.date)) + (v.boat ? DRAW : 0)),
+      ...voyages
+        .filter((v) => v.places.some((n) => places.find((p) => p.name === n)?.id === id))
+        .map((v) => pos(day(v.date)) + (v.boat ? DRAW : 0)),
     ].sort((x, y) => x - y);
     const keys: [number, string][] = [[0, UNLIT]];
     let color = UNLIT;

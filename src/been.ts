@@ -108,15 +108,19 @@ export const trips: { when: string; year: number; places: string[] }[] = [
 
 // Travel that Flighty does not have, for the route replay on /passport: the place lights up on
 // the date, and a boat trip also draws a line ([lon, lat] points, approximate).
-export const voyages: { date: string; place: string; boat?: [number, number][] }[] = [
+export const voyages: { date: string; places: string[]; boat?: [number, number][] }[] = [
   // Alaska cruise from Seattle up the Inside Passage (approximate stops).
-  { date: '2018-07-30', place: 'United States', boat: [
+  { date: '2018-07-30', places: ['United States'], boat: [
     [-122.4, 47.6], [-123.3, 48.4], [-124.7, 49.6], [-127.5, 50.9], [-130.2, 53.9],
     [-131.6, 55.3], [-134.4, 58.3], [-135.3, 59.45],
   ] },
-  { date: '2022-07-01', place: 'Canada' },
-  { date: '2024-12-10', place: 'Antarctica', boat: [[-68.3, -54.9], [-63.5, -64.6]] }, // Ushuaia to the Peninsula
-  { date: '2026-06-14', place: 'Svalbard', boat: [[15.6, 78.25], [11.9, 78.9], [12.5, 80.0]] }, // north from Longyearbyen
+  { date: '2022-07-01', places: ['Canada'] },
+  { date: '2024-12-10', places: ['Antarctica'], boat: [[-68.3, -54.9], [-63.5, -64.6]] }, // Ushuaia to the Peninsula
+  // Caribbean cruise from Fort Lauderdale and back (between the Jul 11 and Jul 21 flights).
+  { date: '2025-07-13', places: ['The Bahamas', 'Puerto Rico', 'Dominican Republic'], boat: [
+    [-80.1, 26.1], [-77.35, 25.1], [-72.0, 22.6], [-66.1, 18.5], [-70.7, 19.85], [-74.5, 23.2], [-80.1, 26.1],
+  ] },
+  { date: '2026-06-14', places: ['Svalbard'], boat: [[15.6, 78.25], [11.9, 78.9], [12.5, 80.0]] }, // north from Longyearbyen
 ];
 
 export const countryCount = places.filter((p) => !p.territory).length;
