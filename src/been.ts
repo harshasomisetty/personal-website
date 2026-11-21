@@ -103,9 +103,6 @@ export const trips: { when: string; year: number; places: string[] }[] = [
   { year: 2026, when: 'Nov', places: ['Puerto Rico'] },
 ].reverse();
 
-// UN member states (193) + the two observer states.
-const worldCountries = 195;
 export const countryCount = places.filter((p) => !p.territory).length;
-export const worldPercent = Math.round((countryCount / worldCountries) * 100);
 export const continentCount = new Set(places.map((p) => p.region)).size;
 
