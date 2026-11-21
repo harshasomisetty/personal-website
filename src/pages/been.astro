@@ -3,9 +3,10 @@ import Stamp from '@/components/Stamp.astro';
 import Base from '@/layouts/Base.astro';
 import { continentCount, countryCount, places, regions, trips } from '@/been';
 import flights from '@/flights.json';
-import { geoEqualEarth, geoGraticule10, geoPath } from 'd3-geo';
+import { geoArea, geoBounds, geoContains, geoEqualEarth, geoGraticule10, geoPath } from 'd3-geo';
 import { feature } from 'topojson-client';
 import world from 'world-atlas/countries-110m.json';
+import world10 from 'world-atlas/countries-10m.json';
 
 // The map renders to a static SVG at build time; the page ships no map JavaScript.
 // Amber = countries I have been to (src/been.ts). White = flight routes (src/flights.json,
@@ -32,14 +33,34 @@ const pts = flights.points as Record<string, [number, number]>;
 // Route replay: each flight draws at its real date, scaled to SPAN ms; CSS animations, which
 // the scrub bar script pauses, plays and seeks. Each line is faint, so a route flown many
 // times ends up brighter.
-const SPAN = 6500;
+const SPAN = 7000;
 const DRAW = 700; // ms for one line to draw
 const log = flights.log as [string, string, string][];
 const day = (s: string) => Date.parse(`${s}T00:00:00Z`);
 const t0 = day(log[0][2]);
 const t1 = day(log.at(-1)![2]);
-const pos = (t: number) => Math.max(0, Math.round(((t - t0) / (t1 - t0)) * SPAN));
 const total = SPAN + DRAW;
+// Each year gets time in proportion to the square root of its flights, so the quiet early
+// years pass quickly. Inside a year, time is linear by date.
+const logYears = [...new Set(log.map((f) => f[2].slice(0, 4)))];
+const segs = logYears.map((y) => ({
+  a: Math.max(t0, Date.UTC(+y, 0, 1)),
+  b: Math.min(t1, Date.UTC(+y + 1, 0, 1)),
+  w: Math.sqrt(log.filter((f) => f[2].startsWith(y)).length),
+}));
+const sumW = segs.reduce((n, g) => n + g.w, 0);
+let acc = 0;
+for (const g of segs as any[]) {
+  g.start = (acc / sumW) * SPAN;
+  acc += g.w;
+  g.len = (g.w / sumW) * SPAN;
+}
+const pos = (t: number) => {
+  const k = Math.min(Math.max(0, new Date(t).getUTCFullYear() - +logYears[0]), segs.length - 1);
+  const g = segs[k] as any;
+  const f = g.b > g.a ? Math.min(1, Math.max(0, (t - g.a) / (g.b - g.a))) : 0;
+  return Math.round(g.start + f * g.len);
+};
 const flown = log.map(([a, b, d]) => ({
   d: path({ type: 'LineString', coordinates: [pts[a], pts[b]] } as any),
   delay: `${pos(day(d))}ms`,
@@ -56,14 +77,78 @@ for (let d = new Date(t0); d.getTime() <= t1; d.setUTCMonth(d.getUTCMonth() + 1,
   });
 }
 const monthMarks = months.map((m, k) => ({ ...m, to: k + 1 < months.length ? months[k + 1].from : total }));
-const logYears = [...new Set(log.map((f) => f[2].slice(0, 4)))];
+// Countries light up as flights reach them and get brighter with each flight. The country of
+// an airport: its Flighty ISO code, matched to a map id by the 10m shapes the airports fall in.
+// Skip shapes with inverted winding (area > half the globe, for example the Maldives).
+const shapes10 = (feature(world10 as any, (world10 as any).objects.countries) as any).features
+  .filter((f: any) => geoArea(f) < 2 * Math.PI)
+  .map((f: any) => ({ f, b: geoBounds(f) }));
+const inBox = ([x, y]: number[], [[x0, y0], [x1, y1]]: number[][]) =>
+  y >= y0 && y <= y1 && (x0 <= x1 ? x >= x0 && x <= x1 : x >= x0 || x <= x1);
+const votes = new Map<string, Map<string, number>>();
+for (const [code, cc] of Object.entries(flights.country as Record<string, string>)) {
+  // A coastal airport can fall just outside its shape: also try points 5-10 km away.
+  const [x, y] = pts[code];
+  const tries = [[0, 0], ...[0.05, 0.1].flatMap((r) => [[r, 0], [-r, 0], [0, r], [0, -r], [r, r], [-r, r], [r, -r], [-r, -r]])];
+  const hit = tries
+    .map(([dx, dy]) => [x + dx, y + dy])
+    .map((pt) => shapes10.find((s: any) => s.f.id && inBox(pt, s.b) && geoContains(s.f, pt)))
+    .find(Boolean);
+  if (!hit) continue;
+  const v = votes.get(cc) ?? new Map();
+  v.set(hit.f.id, (v.get(hit.f.id) ?? 0) + 1);
+  votes.set(cc, v);
+}
+const mapId = (code: string) => {
+  const cc = (flights.country as Record<string, string>)[code];
+  const territory = places.find((p) => p.iso2 === cc);
+  if (territory) return territory.id;
+  const v = votes.get(cc);
+  return v && [...v].sort((x, y) => y[1] - x[1])[0][0];
+};
+const UNLIT = '#262626';
+const shade = (k: number) => {
+  // 1 flight: dim amber. 30 or more: light amber.
+  const t = Math.min(1, Math.log(1 + k) / Math.log(31));
+  const stops: [number, number[]][] = [
+    [0, [0x7a, 0x48, 0x08]],
+    [0.55, [0xf5, 0x9e, 0x0b]],
+    [1, [0xfc, 0xd3, 0x4d]],
+  ];
+  const i = t <= 0.55 ? 0 : 1;
+  const [ta, ca] = stops[i];
+  const [tb, cb] = stops[i + 1];
+  const u = (Math.max(t, ta) - ta) / (tb - ta);
+  return '#' + ca.map((c, j) => Math.round(c + (cb[j] - c) * u).toString(16).padStart(2, '0')).join('');
+};
+const FADE = 200;
+const lightCss = [...visited]
+  .map((id) => {
+    const hits = log.filter(([a, b]) => mapId(a) === id || mapId(b) === id).map((f) => pos(day(f[2])));
+    const keys: [number, string][] = [[0, UNLIT]];
+    let color = UNLIT;
+    hits.forEach((t, k) => {
+      const next = shade(k + 1);
+      if (next === color) return;
+      const at = Math.max(t, keys.at(-1)![0]);
+      keys.push([at, color], [Math.min(at + FADE, total), next]);
+      color = next;
+    });
+    // Visited without a flight (cruise, car, or before 2021): light up at the end.
+    if (!hits.length) keys.push([SPAN, UNLIT], [SPAN + FADE, (color = shade(1))]);
+    const frames = keys.map(([t, c]) => `${((t / total) * 100).toFixed(3)}%{fill:${c}}`).join('');
+    return `@keyframes k${id}{${frames}100%{fill:${color}}}[data-m="${id}"]{fill:${color};animation:k${id} ${total}ms linear forwards}`;
+  })
+  .join('');
+
 // Under the scrub bar: a tick at each 1 January, and each year's label in the middle of its span.
 const pct = (ms: number) => (ms / total) * 100;
-const bounds = [...logYears.map((y) => pos(Date.UTC(+y, 0, 1))), SPAN];
+const bounds = [...segs.map((g: any) => g.start), SPAN];
 const yearTicks = logYears.map((y, k) => ({
   year: y,
   tick: k > 0 ? pct(bounds[k]) : null,
   mid: pct((bounds[k] + bounds[k + 1]) / 2),
+  narrow: pct(bounds[k + 1] - bounds[k]) < 10, // no room for a label on a phone
 }));
 
 // Timeline: trips grouped by year, newest first. A typo in a trip fails the build.
@@ -111,9 +196,11 @@ const stats = [
 const mrz = `P<BEEN<<${countryCount}<COUNTRIES<<${flights.flights}<FLIGHTS<<${flights.miles}<MILES`.padEnd(72, '<');
 
 // Hover a country (or a city in it) in the list and its shape lights up on the map. CSS only.
-const highlight = places
-  .map((p) => `.been:has([data-c="${p.id}"]:hover) [data-m="${p.id}"]{fill:#fff}`)
-  .join('');
+// !important: the light-up animations would win over a plain rule.
+const highlight =
+  lightCss +
+  '[data-m]:hover{fill:#fff!important}' +
+  places.map((p) => `.been:has([data-c="${p.id}"]:hover) [data-m="${p.id}"]{fill:#fff!important}`).join('');
 ---
 
 <Base
@@ -142,7 +229,6 @@ const highlight = places
               <path
                 d={s.d}
                 data-m={s.id}
-                class="fill-amber-500 transition-colors hover:fill-amber-300"
                 stroke="hsl(0 0% 3.9%)"
                 stroke-width="0.5"
               >
@@ -157,7 +243,7 @@ const highlight = places
           dots.map(({ name, id, xy }) => (
             <g>
               <circle cx={xy[0]} cy={xy[1]} r="7" class="fill-amber-500/20" />
-              <circle cx={xy[0]} cy={xy[1]} r="3.5" data-m={id} class="fill-amber-500" stroke="hsl(0 0% 3.9%)" stroke-width="1">
+              <circle cx={xy[0]} cy={xy[1]} r="3.5" data-m={id} stroke="hsl(0 0% 3.9%)" stroke-width="1">
                 <title>{name}</title>
               </circle>
             </g>
@@ -173,8 +259,8 @@ const highlight = places
                 pathLength="1"
                 fill="none"
                 stroke="white"
-                stroke-opacity="0.35"
-                stroke-width="0.9"
+                stroke-opacity="0.55"
+                stroke-width="1"
                 stroke-linecap="round"
               />
             ))
@@ -235,7 +321,10 @@ const highlight = places
               yearTicks.map((t) => (
                 <>
                   {t.tick !== null && <span class="absolute -top-2.5 h-1.5 w-px bg-neutral-700" style={`left:${t.tick}%`} />}
-                  <span class="absolute top-0 -translate-x-1/2" style={`left:${t.mid}%`}>{t.year}</span>
+                  <span class:list={['absolute top-0 -translate-x-1/2', t.narrow && 'max-sm:hidden']} style={`left:${t.mid}%`}>
+                    <span class="sm:hidden">’{t.year.slice(2)}</span>
+                    <span class="max-sm:hidden">{t.year}</span>
+                  </span>
                 </>
               ))
             }

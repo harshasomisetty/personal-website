@@ -6,6 +6,7 @@ export type Place = {
   flag: string;
   region: string;
   territory?: string; // the country it belongs to; not counted as a country
+  iso2?: string; // territories: ISO alpha-2, so Flighty airports there map to the territory
   note?: string;
   cities?: string[]; // 2+ cities open as a list; 1 city shows as gray text
   dot?: [number, number];
@@ -27,7 +28,7 @@ export const places: Place[] = [
   { name: 'Dominican Republic', id: '214', flag: '🇩🇴', region: 'North America', cities: ['Punta Cana', 'Puerto Plata'] },
   { name: 'The Bahamas', id: '044', flag: '🇧🇸', region: 'North America', cities: ['Nassau'], dot: [-77.4, 25.0] },
   { name: 'St. Kitts and Nevis', id: '659', flag: '🇰🇳', region: 'North America', dot: [-62.7, 17.3] },
-  { name: 'Puerto Rico', id: '630', flag: '🇵🇷', region: 'North America', territory: 'United States', dot: [-66.5, 18.2] },
+  { name: 'Puerto Rico', id: '630', flag: '🇵🇷', region: 'North America', territory: 'United States', iso2: 'PR', dot: [-66.5, 18.2] },
   { name: 'Peru', id: '604', flag: '🇵🇪', region: 'South America', cities: ['Lima', 'Cusco'] },
   { name: 'Argentina', id: '032', flag: '🇦🇷', region: 'South America', cities: ['Buenos Aires', 'Córdoba', 'Iguazú', 'Ushuaia'] },
   { name: 'Brazil', id: '076', flag: '🇧🇷', region: 'South America', cities: ['São Paulo', 'Rio de Janeiro', 'Belo Horizonte', 'Florianópolis', 'Recife'] },
@@ -40,13 +41,13 @@ export const places: Place[] = [
   { name: 'Switzerland', id: '756', flag: '🇨🇭', region: 'Europe', cities: ['Geneva', 'Zermatt'] },
   { name: 'Italy', id: '380', flag: '🇮🇹', region: 'Europe', cities: ['Rome', 'Milan', 'Venice'] },
   { name: 'Norway', id: '578', flag: '🇳🇴', region: 'Europe', cities: ['Oslo', 'Flåm'] },
-  { name: 'Svalbard', id: '744', flag: '🇸🇯', region: 'Europe', territory: 'Norway', note: 'Arctic', dot: [16.0, 78.2] },
+  { name: 'Svalbard', id: '744', flag: '🇸🇯', region: 'Europe', territory: 'Norway', iso2: 'SJ', note: 'Arctic', dot: [16.0, 78.2] },
   { name: 'Finland', id: '246', flag: '🇫🇮', region: 'Europe', cities: ['Helsinki'] },
   { name: 'Turkey', id: '792', flag: '🇹🇷', region: 'Asia', cities: ['Istanbul'] },
   { name: 'United Arab Emirates', id: '784', flag: '🇦🇪', region: 'Asia', cities: ['Dubai', 'Abu Dhabi'] },
   { name: 'India', id: '356', flag: '🇮🇳', region: 'Asia', cities: ['Delhi', 'Varanasi', 'Kolkata', 'Ahmedabad', 'Mumbai', 'Hyderabad', 'Tirupati', 'Chennai', 'Madurai', 'Tiruchendur', 'Kochi', 'Bangalore', 'Kerala', 'Ladakh', 'Rameswaram', 'Kanchipuram'] },
   { name: 'China', id: '156', flag: '🇨🇳', region: 'Asia', cities: ['Shenzhen'] },
-  { name: 'Hong Kong', id: '344', flag: '🇭🇰', region: 'Asia', territory: 'China', dot: [114.17, 22.3] },
+  { name: 'Hong Kong', id: '344', flag: '🇭🇰', region: 'Asia', territory: 'China', iso2: 'HK', dot: [114.17, 22.3] },
   { name: 'Japan', id: '392', flag: '🇯🇵', region: 'Asia', cities: ['Tokyo', 'Kyoto', 'Osaka', 'Kanazawa'] },
   { name: 'Thailand', id: '764', flag: '🇹🇭', region: 'Asia', cities: ['Bangkok'] },
   { name: 'Malaysia', id: '458', flag: '🇲🇾', region: 'Asia', cities: ['Kuala Lumpur', 'Johor'] },

@@ -28,7 +28,7 @@ where u.userId = ? and u.deleted is null and m.deleted is null and not m.isCance
 '''
 now = time.time()
 flights = [r for r in db.execute(q, (me, me)) if r[4] < now]
-airports = {r[0]: r[1:] for r in db.execute('select id, iata, city, latitude, longitude from Airport')}
+airports = {r[0]: r[1:] for r in db.execute('select id, iata, city, latitude, longitude, countryCode from Airport')}
 airlines = {r[0]: r[1] for r in db.execute('select id, name from Airline')}
 
 routes = Counter(tuple(sorted((airports[d][0], airports[a][0]))) for d, a, *_ in flights)
@@ -50,6 +50,7 @@ out = {
     'topAirports': [{'code': c, 'city': next(v[1] for v in airports.values() if v[0] == c), 'visits': n} for c, n in visits.most_common(5)],
     'topAirlines': [{'name': n, 'flights': k} for n, k in carriers.most_common(5)],
     'points': {v[0]: [round(v[3], 3), round(v[2], 3)] for k, v in airports.items() if v[0] in visits},  # [lon, lat]
+    'country': {v[0]: v[4] for v in airports.values() if v[0] in visits},  # ISO alpha-2 per airport
     'routes': len(routes),
     # Every flight in date order, for the route replay: [from, to, 'YYYY-MM-DD'].
     'log': [[airports[d][0], airports[a][0], time.strftime('%Y-%m-%d', time.gmtime(t))]
