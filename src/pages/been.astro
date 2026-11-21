@@ -9,7 +9,7 @@ import {
   trips,
   worldPercent,
 } from '@/been';
-import { geoEqualEarth, geoPath } from 'd3-geo';
+import { geoEqualEarth, geoGraticule10, geoPath } from 'd3-geo';
 import { feature } from 'topojson-client';
 import world from 'world-atlas/countries-110m.json';
 
@@ -20,13 +20,17 @@ const countries = feature(world as any, (world as any).objects.countries) as any
 const projection = geoEqualEarth().fitSize([width, height], countries);
 const path = geoPath(projection).digits(1);
 const visited = new Set(places.map((p) => p.id));
+const sphere = path({ type: 'Sphere' } as any);
+const graticule = path(geoGraticule10());
 const shapes = countries.features.map((f: any) => ({
   d: path(f),
+  id: f.id as string,
+  name: f.properties.name as string,
   visited: visited.has(f.id),
 }));
 const dots = places
   .filter((p) => p.dot)
-  .map((p) => ({ name: p.name, xy: projection(p.dot!)! }));
+  .map((p) => ({ name: p.name, id: p.id, xy: projection(p.dot!)! }));
 
 // Timeline: trips grouped by year, newest first. A typo in a trip fails the build.
 // A trip place is a country (or territory) name, or a city in one of the country lists.
@@ -42,147 +46,184 @@ const stats = [
   { value: countryCount, label: 'Countries' },
   { value: `${worldPercent}%`, label: 'Of the world' },
   { value: `${continentCount}/7`, label: 'Continents' },
+  { value: trips.length, label: 'Trips since 2019' },
 ];
+
+// Hover a country (or a city in it) in the list and its shape lights up on the map. CSS only.
+const highlight = places
+  .map((p) => `.been:has([data-c="${p.id}"]:hover) [data-m="${p.id}"]{fill:#fff}`)
+  .join('');
 ---
 
 <Base
   title="Been"
   description={`The ${countryCount} countries and Antarctica that Harsha Somisetty has been to.`}
 >
-  <PageHeader
-    title="Been"
-    description={`${countryCount} countries and Antarctica.`}
-  />
+  <style set:html={highlight} />
+  <div class="been">
+    <PageHeader title="Been" description={`${countryCount} countries and Antarctica.`} />
 
-  <svg
-    viewBox={`0 0 ${width} ${height}`}
-    role="img"
-    aria-label="World map with the visited countries in orange"
-    class="w-full h-auto"
-  >
-    {
-      shapes.map((s: { d: string; visited: boolean }) => (
-        <path
-          d={s.d}
-          class={s.visited ? 'fill-amber-500' : 'fill-neutral-800'}
-          stroke="hsl(0 0% 3.9%)"
-          stroke-width="0.5"
-        />
-      ))
-    }
-    {
-      dots.map(({ name, xy }) => (
-        <circle cx={xy[0]} cy={xy[1]} r="3.5" class="fill-amber-500" stroke="hsl(0 0% 3.9%)" stroke-width="1">
-          <title>{name}</title>
-        </circle>
-      ))
-    }
-  </svg>
-
-  <div class="mt-8 grid grid-cols-3 gap-4 text-center">
-    {
-      stats.map((s) => (
-        <div>
-          <p class="text-3xl font-bold text-amber-500">{s.value}</p>
-          <p class="mt-1 text-sm text-neutral-500">{s.label}</p>
-        </div>
-      ))
-    }
-  </div>
-
-  <div class="mt-12 space-y-10">
-    {
-      regions.map((region) => (
-        <section>
-          <h2 class="mb-3 text-xl font-bold">{region}</h2>
-          <ul class="grid gap-x-6 gap-y-2 sm:grid-cols-2">
-            {places
-              .filter((p) => p.region === region && (!p.territory || p.id === '010'))
-              .map((p) => {
-                // A territory shows under its country (Puerto Rico under the United States).
-                const subs = [
-                  ...(p.cities ?? []),
-                  ...places
-                    .filter((t) => t.territory === p.name)
-                    .map((t) => (t.note ? `${t.name} (${t.note})` : t.name)),
-                ];
-                return subs.length > 1 ? (
-                  <li class="has-open:col-span-full">
-                    <details class="group">
-                      <summary class="flex cursor-pointer list-none items-baseline gap-2 [&::-webkit-details-marker]:hidden">
-                        <span aria-hidden="true">{p.flag}</span>
-                        <span class="text-neutral-200 underline underline-offset-4 decoration-neutral-600 group-hover:decoration-neutral-200">
-                          {p.name}
-                        </span>
-                        <span class="text-sm text-neutral-500">{subs.length} places</span>
-                        <svg
-                          aria-hidden="true"
-                          viewBox="0 0 16 16"
-                          class="size-3 self-center text-neutral-500 transition-transform group-open:rotate-90"
-                        >
-                          <path d="M6 3l5 5-5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                        </svg>
-                      </summary>
-                      <ul class="mt-2 mb-3 ml-7 grid grid-cols-2 gap-x-4 gap-y-1 text-sm text-neutral-400 sm:grid-cols-3 md:grid-cols-4">
-                        {subs.map((c) => <li>{c}</li>)}
-                      </ul>
-                    </details>
-                  </li>
-                ) : (
-                  <li class="flex items-baseline gap-2">
-                    <span aria-hidden="true">{p.flag}</span>
-                    <span class="text-neutral-200">{p.name}</span>
-                    {subs[0] && <span class="text-sm text-neutral-500">{subs[0]}</span>}
-                  </li>
-                );
-              })}
-          </ul>
-        </section>
-      ))
-    }
-  </div>
-
-  <section class="mt-14">
-    <h2 class="mb-1 text-xl font-bold">Timeline</h2>
-    <p class="mb-6 text-sm text-neutral-500">Trips from the locations in my photos. Drives near home are not included.</p>
-    <div class="relative border-l border-neutral-800 ml-1.5">
+    <svg
+      viewBox={`0 0 ${width} ${height}`}
+      role="img"
+      aria-label="World map with the visited countries in orange"
+      class="w-full h-auto"
+    >
+      <path d={sphere} fill="hsl(0 0% 6.5%)" stroke="hsl(0 0% 16%)" stroke-width="1" />
+      <path d={graticule} fill="none" stroke="hsl(0 0% 11%)" stroke-width="0.5" />
       {
-        years.map((year) => (
-          <div class="mb-6">
-            <p class="mb-3 -ml-px pl-6 font-mono text-sm text-neutral-500">{year}</p>
-            <ul class="space-y-4">
-              {trips
-                .filter((t) => t.year === year)
-                .map((t) => (
-                  <li class="relative pl-6">
-                    <span class="absolute -left-[5px] top-2 size-2.5 rounded-full bg-amber-500" />
-                    <p class="text-neutral-200">
-                      {t.places.map((n, i) => (
-                        <>
-                          {i > 0 && <span class="text-neutral-600"> → </span>}
-                          <span class="whitespace-nowrap">
-                            {(i === 0 || placeOf(t.places[i - 1]) !== placeOf(n)) && (
-                              <span aria-hidden="true">{placeOf(n)!.flag} </span>
-                            )}
-                            {n}
-                          </span>
-                        </>
-                      ))}
-                    </p>
-                    <p class="text-sm text-neutral-500">{t.when} {t.year}</p>
-                  </li>
-                ))}
-            </ul>
+        shapes.map((s: { d: string; id: string; name: string; visited: boolean }) =>
+          s.visited ? (
+            <path
+              d={s.d}
+              data-m={s.id}
+              class="fill-amber-500 transition-colors hover:fill-amber-300"
+              stroke="hsl(0 0% 3.9%)"
+              stroke-width="0.5"
+            >
+              <title>{places.find((p) => p.id === s.id)?.name ?? s.name}</title>
+            </path>
+          ) : (
+            <path d={s.d} class="fill-neutral-800" stroke="hsl(0 0% 3.9%)" stroke-width="0.5" />
+          ),
+        )
+      }
+      {
+        dots.map(({ name, id, xy }) => (
+          <g>
+            <circle cx={xy[0]} cy={xy[1]} r="7" class="fill-amber-500/20" />
+            <circle cx={xy[0]} cy={xy[1]} r="3.5" data-m={id} class="fill-amber-500" stroke="hsl(0 0% 3.9%)" stroke-width="1">
+              <title>{name}</title>
+            </circle>
+          </g>
+        ))
+      }
+    </svg>
+
+    <dl class="mt-8 grid grid-cols-2 border-y border-neutral-800 sm:grid-cols-4">
+      {
+        stats.map((s, i) => (
+          <div
+            class:list={[
+              'px-4 py-4',
+              i % 2 === 1 && 'border-l border-neutral-800',
+              i > 1 && 'border-t border-neutral-800 sm:border-t-0',
+              i === 2 && 'sm:border-l',
+            ]}
+          >
+            <dd class="text-3xl font-semibold tracking-tight tabular-nums text-amber-500">{s.value}</dd>
+            <dt class="mt-1 text-xs uppercase tracking-wider text-neutral-500">{s.label}</dt>
           </div>
         ))
       }
+    </dl>
+
+    <div class="mt-12 space-y-10">
+      {
+        regions.map((region) => {
+          const list = places.filter((p) => p.region === region && (!p.territory || p.id === '010'));
+          return (
+            <section>
+              <h2 class="mb-3 flex items-baseline justify-between border-b border-neutral-800 pb-2">
+                <span class="text-xl font-bold">{region}</span>
+                {region !== 'Antarctica' && (
+                  <span class="font-mono text-xs text-neutral-500">{list.length}</span>
+                )}
+              </h2>
+              <ul class="grid gap-x-6 gap-y-2 sm:grid-cols-2">
+                {list.map((p) => {
+                  // A territory shows under its country (Puerto Rico under the United States).
+                  const subs = [
+                    ...(p.cities ?? []),
+                    ...places
+                      .filter((t) => t.territory === p.name)
+                      .map((t) => (t.note ? `${t.name} (${t.note})` : t.name)),
+                  ];
+                  return subs.length > 1 ? (
+                    <li class="has-open:col-span-full" data-c={p.id}>
+                      <details class="group">
+                        <summary class="flex cursor-pointer list-none items-baseline gap-2 [&::-webkit-details-marker]:hidden">
+                          <span aria-hidden="true">{p.flag}</span>
+                          <span class="text-neutral-200 underline underline-offset-4 decoration-neutral-600 group-hover:decoration-neutral-200">
+                            {p.name}
+                          </span>
+                          <span class="text-sm text-neutral-500">{subs.length} places</span>
+                          <svg
+                            aria-hidden="true"
+                            viewBox="0 0 16 16"
+                            class="size-3 self-center text-neutral-500 transition-transform group-open:rotate-90"
+                          >
+                            <path d="M6 3l5 5-5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                          </svg>
+                        </summary>
+                        <ul class="mt-2 mb-3 ml-7 grid grid-cols-2 gap-x-4 gap-y-1 text-sm text-neutral-400 sm:grid-cols-3 md:grid-cols-4">
+                          {subs.map((c) => <li>{c}</li>)}
+                        </ul>
+                      </details>
+                    </li>
+                  ) : (
+                    <li class="flex items-baseline gap-2" data-c={p.id}>
+                      <span aria-hidden="true">{p.flag}</span>
+                      <span class="text-neutral-200">{p.name}</span>
+                      {subs[0] && <span class="text-sm text-neutral-500">{subs[0]}</span>}
+                    </li>
+                  );
+                })}
+              </ul>
+            </section>
+          );
+        })
+      }
     </div>
-    {
-      undated.length > 0 && (
-        <p class="mt-2 text-sm text-neutral-500">
-          Before 2019, dates unknown: {undated.map((p) => p.name).join(', ')}.
-        </p>
-      )
-    }
-  </section>
+
+    <section class="mt-16">
+      <h2 class="mb-1 text-xl font-bold">Timeline</h2>
+      <p class="mb-8 text-sm text-neutral-500">Trips from the locations in my photos. Drives near home are not included.</p>
+      <div class="space-y-10">
+        {
+          years.map((year) => {
+            const list = trips.filter((t) => t.year === year);
+            return (
+              <div class="grid gap-x-8 gap-y-3 md:grid-cols-[5rem_1fr]">
+                <div class="flex items-baseline gap-3 md:block">
+                  <p class="font-mono text-2xl text-neutral-200 md:sticky md:top-6">{year}</p>
+                  <p class="font-mono text-xs text-neutral-500 md:mt-1">
+                    {list.length} {list.length === 1 ? 'trip' : 'trips'}
+                  </p>
+                </div>
+                <ol class="border-l border-neutral-800">
+                  {list.map((t) => (
+                    <li class="relative grid grid-cols-[5rem_1fr] gap-x-3 py-1.5 pl-5 transition-colors hover:bg-neutral-900/60">
+                      <span class="absolute -left-[3.5px] top-[0.85rem] size-1.5 rounded-full bg-amber-500" />
+                      <span class="pt-[0.2rem] font-mono text-xs whitespace-nowrap text-neutral-500">{t.when}</span>
+                      <p class="text-neutral-200">
+                        {t.places.map((n, i) => (
+                          <>
+                            {i > 0 && <span class="text-neutral-600"> → </span>}
+                            <span class="whitespace-nowrap">
+                              {(i === 0 || placeOf(t.places[i - 1]) !== placeOf(n)) && (
+                                <span aria-hidden="true">{placeOf(n)!.flag} </span>
+                              )}
+                              {n}
+                            </span>
+                          </>
+                        ))}
+                      </p>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            );
+          })
+        }
+      </div>
+      {
+        undated.length > 0 && (
+          <p class="mt-8 text-sm text-neutral-500">
+            Before 2019, dates unknown: {undated.map((p) => p.name).join(', ')}.
+          </p>
+        )
+      }
+    </section>
+  </div>
 </Base>
