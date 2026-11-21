@@ -407,29 +407,26 @@ const highlight =
       </p>
     </section>
 
-    <div class="mt-12 divide-y divide-neutral-800">
+    {/* Stamps: one visa page per continent. The stamp already names the country, so there is
+        no caption; a tap opens the cities and trip dates. Stamps sit a little off the grid and
+        overlap a bit, as on a real passport page. */}
+    <p class="mt-12 mb-3 font-mono text-[11px] tracking-[0.15em] text-neutral-500 uppercase">
+      Visas <span class="text-neutral-700">·</span> tap a stamp for cities and dates
+    </p>
+    <div class="space-y-3">
       {
-        regions.map((region) => {
+        regions.map((region, r) => {
           const list = places.filter((p) => p.region === region && (!p.territory || p.id === '010'));
-          // With 7+ stamps the title sits in the middle of the second row: after 5 stamps on a
-          // phone (5 a row, title 3 wide), after 4 from sm up (4 a row, title 2 wide). Stamps
-          // have even order values, so an odd order puts the title between two of them.
-          const middle = list.length >= 7;
-          const title = (
-            <>
-              <span class="text-xl font-bold">{region}</span>
-              {region !== 'Antarctica' && <span class="font-mono text-xs text-neutral-500">{list.length}</span>}
-            </>
-          );
           return (
-            <section class="py-10 first:pt-0 last:pb-0">
-              {!middle && <h2 class="mb-4 flex items-baseline justify-center gap-2">{title}</h2>}
-              <ul class="relative flex flex-wrap justify-center gap-y-4">
-                {middle && (
-                  <li class="order-11 flex w-3/5 items-center justify-center sm:order-9 sm:w-1/2">
-                    <h2 class="flex items-baseline gap-2">{title}</h2>
-                  </li>
-                )}
+            <section class="rounded-2xl border border-neutral-800 bg-neutral-950 bg-[radial-gradient(#ffffff0a_1px,transparent_1px)] bg-size-[10px_10px]">
+              <h2 class="flex items-baseline justify-between gap-3 border-b border-neutral-800/80 px-4 py-2 font-mono text-[11px] tracking-[0.2em] uppercase sm:px-5">
+                <span class="font-semibold text-neutral-200">{region}</span>
+                <span class="text-neutral-600">
+                  {region !== 'Antarctica' && <>{list.length} {list.length === 1 ? 'country' : 'countries'} · </>}
+                  p.{String(r + 1).padStart(2, '0')}
+                </span>
+              </h2>
+              <ul class="relative flex flex-wrap justify-center px-2 pt-3 pb-4 sm:px-4">
                 {list.map((p, i) => {
                   // A territory shows under its country (Puerto Rico under the United States).
                   const subs = [
@@ -438,44 +435,45 @@ const highlight =
                       .filter((t) => t.territory === p.name)
                       .map((t) => (t.note ? `${t.name} (${t.note})` : t.name)),
                   ];
+                  const visits = trips.filter((t) => t.places.some((n) => countryOf(placeOf(n)!) === p));
                   const st = stampOf(p);
-                  const caption = (
-                    <p class="mt-1 flex items-baseline justify-center gap-1 text-center text-[10px] text-neutral-400 sm:text-xs">
-                      <span aria-hidden="true" class="max-sm:hidden">{p.flag}</span>
-                      <span class="truncate">{p.name}</span>
-                    </p>
-                  );
-                  return subs.length > 1 ? (
-                    <li class="stamp-cell w-1/5 px-0.5 sm:w-1/4 sm:px-2" style={`order:${2 * i}`} data-c={p.id}>
-                      {/* One open at a time (name). The panel has no top, so it sits right under its
-                          stamp; left/right come from the list (the ul), so no stamp moves. */}
+                  // A small fixed nudge per stamp (from its place in the list), so rows do not look ruled.
+                  const dx = [0, 6, -4, 3, -6, 4][i % 6];
+                  const dy = [0, 8, -2, 6, 2, -4][(i + r) % 6];
+                  return (
+                    <li
+                      class="stamp-cell -mb-1 w-1/5 px-0.5 hover:z-10 has-[details[open]]:z-10 sm:w-1/6 sm:px-1"
+                      data-c={p.id}
+                    >
+                      {/* One open at a time (name). The panel sits under the whole row (the ul is
+                          the positioned parent), so no stamp moves. The nudge is on the summary: a transform on
+                          the li would make the li the panel's parent. */}
                       <details class="group" name="stamp">
-                        <summary class="stamp-wrap mx-auto block max-w-[120px] cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+                        <summary
+                          class="stamp-wrap block cursor-pointer list-none [&::-webkit-details-marker]:hidden"
+                          style={`transform:translate(${dx}%,${dy}%)`}
+                          aria-label={`${p.name}${subs.length ? `: ${subs.length} ${subs.length === 1 ? 'place' : 'places'}` : ''}`}
+                        >
                           <Stamp name={p.name} date={st.date} foot={st.foot} />
-                          {caption}
-                          <p class="text-center font-mono text-[10px] whitespace-nowrap text-neutral-600 group-hover:text-neutral-400 sm:text-[11px]">
-                            {subs.length} places <span class="inline-block transition-transform group-open:rotate-90">›</span>
-                          </p>
                         </summary>
-                        <div class="absolute inset-x-0 z-20 mt-2 rounded-xl border border-neutral-700 bg-neutral-950/95 p-4 shadow-2xl shadow-black">
-                          <p class="mb-2 flex items-baseline gap-2 text-sm text-neutral-200">
+                        <div class="absolute inset-x-2 z-20 mt-2 rounded-xl border border-neutral-700 bg-neutral-950/95 p-4 shadow-2xl shadow-black backdrop-blur sm:inset-x-4">
+                          <p class="flex items-baseline gap-2 text-sm text-neutral-100">
                             <span aria-hidden="true">{p.flag}</span>
-                            {p.name}
-                            <span class="font-mono text-xs text-neutral-500">{subs.length} places</span>
+                            <span class="font-semibold">{p.name}</span>
+                            {subs.length > 1 && <span class="font-mono text-xs text-neutral-500">{subs.length} places</span>}
                           </p>
-                          <ul class="grid grid-cols-2 gap-x-4 gap-y-1 text-sm text-neutral-400 sm:grid-cols-3">
-                            {subs.map((c) => <li>{c}</li>)}
-                          </ul>
+                          {visits.length > 0 && (
+                            <p class="mt-1 font-mono text-[11px] text-amber-500/80">
+                              {visits.map((v) => `${v.when} ${v.year}`).join(' · ')}
+                            </p>
+                          )}
+                          {subs.length > 0 && (
+                            <ul class="mt-3 grid grid-cols-2 gap-x-4 gap-y-1 text-sm text-neutral-400 sm:grid-cols-3">
+                              {subs.map((c) => <li>{c}</li>)}
+                            </ul>
+                          )}
                         </div>
                       </details>
-                    </li>
-                  ) : (
-                    <li class="stamp-cell w-1/5 px-0.5 sm:w-1/4 sm:px-2" style={`order:${2 * i}`} data-c={p.id}>
-                      <div class="stamp-wrap mx-auto max-w-[120px]">
-                        <Stamp name={p.name} date={st.date} foot={st.foot} />
-                        {caption}
-                        {subs[0] && <p class="truncate text-center font-mono text-[10px] text-neutral-600 sm:text-[11px]">{subs[0]}</p>}
-                      </div>
                     </li>
                   );
                 })}
@@ -485,7 +483,6 @@ const highlight =
         })
       }
     </div>
-
 
     <section class="mt-16">
       <h2 class="mb-1 text-xl font-bold">Timeline</h2>
