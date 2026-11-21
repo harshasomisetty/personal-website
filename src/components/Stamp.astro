@@ -1,0 +1,98 @@
+---
+// A passport ink stamp, drawn in SVG at build time. Shape, ink and tilt come from a hash
+// of the name, so each country always gets the same stamp. Needs the #ink filter on the page.
+interface Props {
+  name: string;
+  date: string; // "SEP 2026", "HOME", or "" (no date known)
+  foot: string; // small text on the bottom edge
+}
+const { name, date, foot } = Astro.props;
+
+let h = 0;
+for (const c of name) h = (h * 31 + c.charCodeAt(0)) >>> 0;
+const shapes = ['circle', 'rect', 'octagon', 'oval'] as const;
+const inks = ['#fbbf24', '#fb7185', '#38bdf8', '#34d399', '#a78bfa', '#f87171', '#5eead4', '#d4d4d4'];
+const shape = shapes[h % shapes.length];
+const ink = inks[(h >>> 3) % inks.length];
+const tilt = ((h >>> 7) % 17) - 8; // -8..8 degrees
+const id = `s${h.toString(36)}`;
+
+const label = name.toUpperCase();
+const W = 160;
+const H = 120;
+// Fit the name: mono glyphs are about 0.6 em wide.
+const fit = (max: number, width: number) => Math.min(max, width / (label.length * 0.62));
+const octagon = (x: number, y: number, w: number, hh: number, c: number) =>
+  `${x + c},${y} ${x + w - c},${y} ${x + w},${y + c} ${x + w},${y + hh - c} ${x + w - c},${y + hh} ${x + c},${y + hh} ${x},${y + hh - c} ${x},${y + c}`;
+---
+
+<svg
+  viewBox={`0 0 ${W} ${H}`}
+  class="stamp block w-full h-auto"
+  style={`--r:${tilt}deg`}
+  aria-hidden="true"
+  font-family="'JetBrains Mono Variable', ui-monospace, monospace"
+>
+  <g filter="url(#ink)" fill={ink} stroke={ink} opacity="0.9">
+    {
+      shape === 'circle' && (
+        <>
+          <circle cx="80" cy="60" r="55" fill="none" stroke-width="2.5" />
+          <circle cx="80" cy="60" r="46" fill="none" stroke-width="1" />
+          <path id={`${id}t`} d="M 46 60 A 34 34 0 0 1 114 60" fill="none" stroke="none" />
+          <path id={`${id}b`} d="M 39 60 A 41 41 0 0 0 121 60" fill="none" stroke="none" />
+          <text font-size={fit(9.5, 96)} font-weight="700" stroke="none" text-anchor="middle" letter-spacing="0.5">
+            <textPath href={`#${id}t`} startOffset="50%">{label}</textPath>
+          </text>
+          <text x="80" y="66" font-size="15" font-weight="800" stroke="none" text-anchor="middle">{date || '★'}</text>
+          <text font-size="7" stroke="none" text-anchor="middle" letter-spacing="1.5">
+            <textPath href={`#${id}b`} startOffset="50%">{foot}</textPath>
+          </text>
+        </>
+      )
+    }
+    {
+      shape === 'oval' && (
+        <>
+          <ellipse cx="80" cy="60" rx="76" ry="52" fill="none" stroke-width="2.5" />
+          <ellipse cx="80" cy="60" rx="69" ry="45" fill="none" stroke-width="1" />
+          <text x="80" y="44" font-size={fit(11, 104)} font-weight="700" stroke="none" text-anchor="middle">{label}</text>
+          <text x="80" y="68" font-size="16" font-weight="800" stroke="none" text-anchor="middle">{date || '★'}</text>
+          <text x="80" y="86" font-size="7" stroke="none" text-anchor="middle" letter-spacing="1.5">{foot}</text>
+        </>
+      )
+    }
+    {
+      (shape === 'rect' || shape === 'octagon') && (
+        <>
+          {shape === 'rect' ? (
+            <>
+              <rect x="6" y="12" width="148" height="96" rx="6" fill="none" stroke-width="2.5" />
+              <rect x="12" y="18" width="136" height="84" rx="3" fill="none" stroke-width="1" />
+            </>
+          ) : (
+            <>
+              <polygon points={octagon(6, 10, 148, 100, 20)} fill="none" stroke-width="2.5" />
+              <polygon points={octagon(12, 16, 136, 88, 16)} fill="none" stroke-width="1" />
+            </>
+          )}
+          <text x="80" y="40" font-size={fit(12, 118)} font-weight="700" stroke="none" text-anchor="middle">{label}</text>
+          <line x1="28" y1="49" x2="132" y2="49" stroke-width="1" />
+          <text x="80" y="73" font-size="17" font-weight="800" stroke="none" text-anchor="middle">{date || '★'}</text>
+          <text x="80" y="92" font-size="7" stroke="none" text-anchor="middle" letter-spacing="1.5">{foot}</text>
+        </>
+      )
+    }
+  </g>
+</svg>
+
+<style>
+  .stamp {
+    transform: rotate(var(--r));
+    transition: transform 200ms ease;
+  }
+  :global(.stamp-wrap:hover) .stamp,
+  :global(details[open]) .stamp {
+    transform: rotate(0deg) scale(1.04);
+  }
+</style>

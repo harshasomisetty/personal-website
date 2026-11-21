@@ -50,8 +50,11 @@ out = {
     'topAirports': [{'code': c, 'city': next(v[1] for v in airports.values() if v[0] == c), 'visits': n} for c, n in visits.most_common(5)],
     'topAirlines': [{'name': n, 'flights': k} for n, k in carriers.most_common(5)],
     'points': {v[0]: [round(v[3], 3), round(v[2], 3)] for k, v in airports.items() if v[0] in visits},  # [lon, lat]
-    'routes': [[a, b, n] for (a, b), n in routes.most_common()],
+    'routes': len(routes),
+    # Every flight in date order, for the route replay: [from, to, 'YYYY-MM'].
+    'log': [[airports[d][0], airports[a][0], time.strftime('%Y-%m', time.gmtime(t))]
+            for d, a, _, _, t, _ in sorted(flights, key=lambda r: r[4])],
 }
 OUT.write_text(json.dumps(out, indent=1, ensure_ascii=False) + '\n')
 shutil.rmtree(tmp)
-print(f"{out['flights']} flights, {out['miles']:,} mi, {out['airports']} airports, {len(out['routes'])} routes -> {OUT}")
+print(f"{out['flights']} flights, {out['miles']:,} mi, {out['airports']} airports, {out['routes']} routes -> {OUT}")

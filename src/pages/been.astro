@@ -1,4 +1,5 @@
 ---
+import Stamp from '@/components/Stamp.astro';
 import Base from '@/layouts/Base.astro';
 import { continentCount, countryCount, places, regions, trips } from '@/been';
 import flights from '@/flights.json';
@@ -27,11 +28,26 @@ const dots = places
   .filter((p) => p.dot)
   .map((p) => ({ name: p.name, id: p.id, xy: projection(p.dot!)! }));
 const pts = flights.points as Record<string, [number, number]>;
-const routes = (flights.routes as [string, string, number][]).map(([a, b, n]) => ({
+
+// Route replay: each flight draws in date order over about 6 s; CSS only (see <style>).
+// Each line is faint, so a route flown many times ends up brighter.
+const log = flights.log as [string, string, string][];
+const step = 6000 / log.length;
+const at = (i: number) => `${Math.round(i * step)}ms`;
+const flown = log.map(([a, b], i) => ({
   d: path({ type: 'LineString', coordinates: [pts[a], pts[b]] } as any),
-  w: (0.6 + Math.log2(n) * 0.45).toFixed(2),
+  delay: at(i),
 }));
-const airports = Object.values(pts).map((c) => projection(c)!);
+const firstUse = new Map<string, number>();
+log.forEach(([a, b], i) => [a, b].forEach((x) => firstUse.has(x) || firstUse.set(x, i)));
+const airports = [...firstUse].map(([code, i]) => ({ xy: projection(pts[code])!, delay: at(i) }));
+const logYears = [...new Set(log.map((f) => f[2].slice(0, 4)))];
+const yearMarks = logYears.map((y, k) => ({
+  year: y,
+  from: at(log.findIndex((f) => f[2].startsWith(y))),
+  to: k + 1 < logYears.length ? at(log.findIndex((f) => f[2].startsWith(logYears[k + 1]))) : at(log.length + 15),
+}));
+const replayEnd = at(log.length + 15);
 
 // Timeline: trips grouped by year, newest first. A typo in a trip fails the build.
 // A trip place is a country (or territory) name, or a city in one of the country lists.
@@ -42,6 +58,20 @@ for (const t of trips)
 const years = [...new Set(trips.map((t) => t.year))];
 const inTrips = new Set(trips.flatMap((t) => t.places.map((n) => placeOf(n)!.name)));
 const undated = places.filter((p) => !inTrips.has(p.name) && p.name !== 'United States');
+
+// Stamps: one per country (and Antarctica). The date is the latest trip there in my photos;
+// a territory counts for its country (Puerto Rico for the United States).
+const countryOf = (p: (typeof places)[number]) =>
+  p.territory && p.territory !== 'no country' ? places.find((c) => c.name === p.territory)! : p;
+const stampOf = (c: (typeof places)[number]) => {
+  const visits = trips.filter((t) => t.places.some((n) => countryOf(placeOf(n)!) === c));
+  const last = visits[0]; // trips are newest first
+  const home = c.name === 'United States';
+  return {
+    date: home ? 'HOME' : last ? `${last.when.slice(0, 3).toUpperCase()} ${last.year}` : '',
+    foot: home ? 'RESIDENT' : visits.length > 1 ? `${visits.length} TRIPS` : 'ADMITTED',
+  };
+};
 
 // 3 x 3 grid. amber = places, white = flights (the same colors as the map).
 const num = (n: number) => n.toLocaleString('en-US');
@@ -80,10 +110,12 @@ const highlight = places
         <h1 class="font-mono text-sm font-semibold uppercase tracking-[0.2em] text-amber-500">Been</h1>
         <p class="font-mono text-xs text-neutral-500">{countryCount} countries and Antarctica</p>
       </header>
+      <div class="relative">
+      <div class="relative" data-map>
       <svg
         viewBox={`0 0 ${width} ${height}`}
         role="img"
-        aria-label={`World map: the visited countries in orange and ${flights.routes.length} flight routes in white`}
+        aria-label={`World map: the visited countries in orange and ${flights.flights} flights in white, drawn in date order`}
         class="w-full h-auto px-2 py-3"
       >
         <path d={sphere} fill="hsl(0 0% 6.5%)" stroke="hsl(0 0% 16%)" stroke-width="1" />
@@ -116,10 +148,39 @@ const highlight = places
           ))
         }
         <g class="pointer-events-none">
-          {routes.map((r) => <path d={r.d} fill="none" stroke="white" stroke-opacity="0.55" stroke-width={r.w} stroke-linecap="round" />)}
-          {airports.map(([x, y]) => <circle cx={x} cy={y} r="1.6" fill="white" />)}
+          {
+            flown.map((f) => (
+              <path
+                d={f.d}
+                class="fly"
+                style={`--d:${f.delay}`}
+                pathLength="1"
+                fill="none"
+                stroke="white"
+                stroke-opacity="0.35"
+                stroke-width="0.9"
+                stroke-linecap="round"
+              />
+            ))
+          }
+          {airports.map((a) => <circle cx={a.xy[0]} cy={a.xy[1]} r="1.6" fill="white" class="pop" style={`--d:${a.delay}`} />)}
         </g>
       </svg>
+        <div class="pointer-events-none absolute bottom-4 left-5 font-mono text-sm text-amber-500" aria-hidden="true">
+          {yearMarks.map((m) => <span class="yr absolute bottom-0 left-0" style={`--a:${m.from};--b:${m.to}`}>{m.year}</span>)}
+          <span class="yr final absolute bottom-0 left-0 whitespace-nowrap" style={`--a:${replayEnd}`}>
+            {`${logYears[0]} – ${logYears.at(-1)}`}
+          </span>
+        </div>
+      </div>
+      <button
+        type="button"
+        data-replay
+        class="absolute right-4 bottom-3 rounded-full border border-neutral-800 bg-neutral-950/80 px-3 py-1 font-mono text-xs text-neutral-400 transition-colors hover:border-neutral-600 hover:text-neutral-100"
+      >
+        ↻ Replay
+      </button>
+      </div>
       <dl class="grid grid-cols-3 border-t border-neutral-800">
         {
           stats.map((s, i) => (
@@ -161,7 +222,7 @@ const highlight = places
                   <span class="font-mono text-xs text-neutral-500">{list.length}</span>
                 )}
               </h2>
-              <ul class="grid gap-x-6 gap-y-2 sm:grid-cols-2">
+              <ul class="grid grid-cols-3 gap-x-3 gap-y-5 sm:grid-cols-4">
                 {list.map((p) => {
                   // A territory shows under its country (Puerto Rico under the United States).
                   const subs = [
@@ -170,33 +231,33 @@ const highlight = places
                       .filter((t) => t.territory === p.name)
                       .map((t) => (t.note ? `${t.name} (${t.note})` : t.name)),
                   ];
+                  const st = stampOf(p);
+                  const caption = (
+                    <p class="mt-1 flex items-baseline justify-center gap-1.5 text-center text-xs text-neutral-400">
+                      <span aria-hidden="true">{p.flag}</span>
+                      <span class="truncate">{p.name}</span>
+                    </p>
+                  );
                   return subs.length > 1 ? (
                     <li class="has-open:col-span-full" data-c={p.id}>
                       <details class="group">
-                        <summary class="flex cursor-pointer list-none items-baseline gap-2 [&::-webkit-details-marker]:hidden">
-                          <span aria-hidden="true">{p.flag}</span>
-                          <span class="text-neutral-200 underline underline-offset-4 decoration-neutral-600 group-hover:decoration-neutral-200">
-                            {p.name}
-                          </span>
-                          <span class="text-sm text-neutral-500">{subs.length} places</span>
-                          <svg
-                            aria-hidden="true"
-                            viewBox="0 0 16 16"
-                            class="size-3 self-center text-neutral-500 transition-transform group-open:rotate-90"
-                          >
-                            <path d="M6 3l5 5-5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                          </svg>
+                        <summary class="stamp-wrap block cursor-pointer list-none group-open:w-1/3 sm:group-open:w-1/4 [&::-webkit-details-marker]:hidden">
+                          <Stamp name={p.name} date={st.date} foot={st.foot} />
+                          {caption}
+                          <p class="text-center font-mono text-[11px] text-neutral-600 group-hover:text-neutral-400">
+                            {subs.length} places <span class="inline-block transition-transform group-open:rotate-90">›</span>
+                          </p>
                         </summary>
-                        <ul class="mt-2 mb-3 ml-7 grid grid-cols-2 gap-x-4 gap-y-1 text-sm text-neutral-400 sm:grid-cols-3 md:grid-cols-4">
+                        <ul class="mt-3 mb-2 grid grid-cols-2 gap-x-4 gap-y-1 border-l border-neutral-800 pl-4 text-sm text-neutral-400 sm:grid-cols-3 md:grid-cols-4">
                           {subs.map((c) => <li>{c}</li>)}
                         </ul>
                       </details>
                     </li>
                   ) : (
-                    <li class="flex items-baseline gap-2" data-c={p.id}>
-                      <span aria-hidden="true">{p.flag}</span>
-                      <span class="text-neutral-200">{p.name}</span>
-                      {subs[0] && <span class="text-sm text-neutral-500">{subs[0]}</span>}
+                    <li class="stamp-wrap" data-c={p.id}>
+                      <Stamp name={p.name} date={st.date} foot={st.foot} />
+                      {caption}
+                      {subs[0] && <p class="text-center font-mono text-[11px] text-neutral-600">{subs[0]}</p>}
                     </li>
                   );
                 })}
@@ -258,4 +319,69 @@ const highlight = places
       }
     </section>
   </div>
+
+  <!-- Ink texture for the stamps: noise knocks small holes out of the ink. -->
+  <svg width="0" height="0" class="absolute" aria-hidden="true">
+    <filter id="ink" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="1.3" numOctaves="2" seed="7" result="noise" />
+      <feColorMatrix in="noise" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -2.2 2.3" result="mask" />
+      <feComposite in="SourceGraphic" in2="mask" operator="in" />
+    </filter>
+  </svg>
 </Base>
+
+<script>
+  // Replay: a fresh copy of the map starts its CSS animations again.
+  document.querySelector('[data-replay]')?.addEventListener('click', () => {
+    const map = document.querySelector('[data-map]');
+    map?.replaceWith(map.cloneNode(true));
+  });
+</script>
+
+<style>
+  .fly {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: draw 700ms ease-out var(--d) forwards;
+  }
+  .pop {
+    opacity: 0;
+    animation: show 300ms ease-out var(--d) forwards;
+  }
+  /* A year label shows from --a to --b; the later animation wins once it starts. */
+  .yr {
+    opacity: 0;
+    animation:
+      show 1ms var(--a) forwards,
+      hide 1ms var(--b, 9999s) forwards;
+  }
+  @keyframes draw {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+  @keyframes show {
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes hide {
+    to {
+      opacity: 0;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .fly,
+    .pop,
+    .yr {
+      animation: none;
+    }
+    .fly {
+      stroke-dashoffset: 0;
+    }
+    .pop,
+    .yr.final {
+      opacity: 1;
+    }
+  }
+</style>
