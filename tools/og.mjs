@@ -37,7 +37,6 @@ for (let lat = 84; lat >= -86; lat -= 2.4) {
 for (const p of places) if (p.dot) lit += dot(projection(p.dot));
 
 const html = `<!doctype html><html><head><meta charset="utf-8"><style>
-@font-face { font-family: Display; src: url(${file('node_modules/@fontsource/instrument-serif/files/instrument-serif-latin-400-normal.woff2')}); }
 @font-face { font-family: Sans; src: url(${file('node_modules/@fontsource-variable/instrument-sans/files/instrument-sans-latin-wght-normal.woff2')}); font-weight: 400 700; }
 @font-face { font-family: Mono; src: url(${file('node_modules/@fontsource/dm-mono/files/dm-mono-latin-400-normal.woff2')}); }
 * { margin: 0; box-sizing: border-box; }
@@ -48,7 +47,7 @@ path { fill: none; stroke-width: 3; stroke-linecap: round; }
 .fade { position: absolute; inset: 0; background: linear-gradient(90deg, #0a0a0a 40%, rgb(10 10 10 / .7) 50%, rgb(10 10 10 / 0) 62%); }
 .card { position: absolute; left: 84px; top: 0; bottom: 40px; display: flex; flex-direction: column; justify-content: center; }
 img { width: 168px; height: 168px; border-radius: 50%; object-fit: cover; object-position: 50% 30%; box-shadow: 0 0 0 4px #0a0a0a, 0 0 0 5px #333; }
-h1 { margin-top: 28px; font: 400 92px Display; letter-spacing: -.01em; line-height: 1; }
+h1 { margin-top: 30px; font-size: 72px; font-weight: 600; letter-spacing: -.025em; line-height: 1; }
 .roles { margin-top: 20px; font: 400 28px Mono; color: #a3a3a3; letter-spacing: .02em; }
 .roles b { color: #f59e0b; font-weight: 400; padding: 0 .25em; }
 .hook { margin-top: 26px; font-size: 32px; line-height: 1.35; color: #fafafa; }

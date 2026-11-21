@@ -1,7 +1,5 @@
 @import 'tailwindcss';
 @plugin '@tailwindcss/typography';
-@import '@fontsource/instrument-serif/400.css';
-@import '@fontsource/instrument-serif/400-italic.css';
 @import '@fontsource-variable/instrument-sans/wght.css';
 @import '@fontsource-variable/instrument-sans/wght-italic.css';
 @import '@fontsource/dm-mono/400.css';
@@ -9,10 +7,8 @@
 
 /* The site is dark only. These match the old shadcn dark palette. */
 @theme {
-  /* Harsha's "Editorial" style (chosen 2026-11-21), self-hosted with Fontsource:
-     Instrument Serif only for the name on the home page and og.png (font-display, weight 400 only),
-     Instrument Sans for all text, DM Mono for dates, labels, and numbers. */
-  --font-display: 'Instrument Serif', ui-serif, Georgia, serif;
+  /* Harsha's style (2026-11-21), self-hosted with Fontsource: Instrument Sans for all
+     text (names and titles in semibold, not heavier), DM Mono for dates, labels, and numbers. */
   --font-sans: 'Instrument Sans Variable', ui-sans-serif, system-ui, sans-serif;
   --font-mono: 'DM Mono', ui-monospace, monospace;
   --color-background: hsl(0 0% 3.9%);
