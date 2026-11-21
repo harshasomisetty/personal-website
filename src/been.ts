@@ -117,7 +117,13 @@ export const voyages: { date: string; places: string[]; boat?: [number, number][
     [-127.3, 50.6], [-124.4, 49.3], [-123.37, 48.42], [-122.4, 47.6],
   ] },
   { date: '2022-07-01', places: ['Canada'] },
-  { date: '2024-12-10', places: ['Antarctica'], boat: [[-68.3, -54.9], [-63.5, -64.6]] }, // Ushuaia to the Peninsula
+  // Antarctica cruise from Ushuaia and back, Dec 11–20 (route from photo GPS): Drake Passage, South Shetlands,
+  // stops down the Peninsula to the Lemaire Channel area, north again, Drake Passage, Beagle Channel.
+  { date: '2024-12-11', places: ['Antarctica'], boat: [
+    [-68.3, -54.8], [-66.9, -54.95], [-63.9, -57.9], [-61.7, -60.3], [-59.74, -62.41], [-59.98, -62.96],
+    [-62.67, -64.81], [-63.06, -64.74], [-64.06, -65.11], [-64.44, -64.98], [-61.76, -64.5], [-61.23, -63.87],
+    [-63.52, -59.95], [-65.1, -55.86], [-66.9, -54.95], [-68.3, -54.8],
+  ] },
   // Caribbean cruise from Fort Lauderdale and back (between the Jul 11 and Jul 21 flights).
   { date: '2025-07-13', places: ['The Bahamas', 'Puerto Rico', 'Dominican Republic'], boat: [
     [-80.1, 26.1], [-77.35, 25.1], [-72.0, 22.6], [-66.1, 18.5], [-70.7, 19.85], [-74.5, 23.2], [-80.1, 26.1],
