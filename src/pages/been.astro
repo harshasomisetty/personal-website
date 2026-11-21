@@ -3,6 +3,7 @@ import Base from '@/layouts/Base.astro';
 import {
   continentCount,
   countryCount,
+  milesTraveled,
   places,
   regions,
   trips,
@@ -45,7 +46,7 @@ const stats = [
   { value: countryCount, label: 'Countries' },
   { value: `${worldPercent}%`, label: 'Of the world' },
   { value: `${continentCount}/7`, label: 'Continents' },
-  { value: trips.length, label: 'Trips since 2019' },
+  { value: milesTraveled, label: 'Miles traveled' },
 ];
 
 // Hover a country (or a city in it) in the list and its shape lights up on the map. CSS only.
