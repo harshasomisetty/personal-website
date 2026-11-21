@@ -66,7 +66,7 @@ export const trips: { when: string; year: number; places: string[] }[] = [
   { year: 2020, when: 'Aug', places: ['Houston'] },
   { year: 2021, when: 'Aug', places: ['Hawaii'] },
   { year: 2022, when: 'Jan', places: ['Chicago'] }, // AA EWR-ORD Jan 10, ORD-EWR Jan 14 (emails)
-  { year: 2022, when: 'May', places: ['Chicago'] }, // Lyft airport ride May 15, Uber rides to May 29 (Gmail)
+  { year: 2022, when: 'May – Jun', places: ['Chicago', 'San Francisco'] }, // AA 2919 EWR-ORD May 15; WN ORD-PHX-OAK Jun 4; NK OAK-PHL Jun 18
   { year: 2022, when: 'Jul', places: ['Canada'] },
   { year: 2022, when: 'Jul – Aug', places: ['Chicago'] }, // AA 1211 EWR-ORD, Hyatt House, Divvy rides Jul 28 – Aug 20
   { year: 2022, when: 'Nov', places: ['Portugal'] },
