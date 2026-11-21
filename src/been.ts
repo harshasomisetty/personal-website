@@ -68,7 +68,7 @@ export const trips: { when: string; year: number; places: string[] }[] = [
   { year: 2022, when: 'Jan', places: ['Chicago'] }, // AA EWR-ORD Jan 10, ORD-EWR Jan 14 (emails)
   { year: 2022, when: 'May – Jun', places: ['Chicago', 'San Francisco'] }, // AA 2919 EWR-ORD May 15; WN ORD-PHX-OAK Jun 4; NK OAK-PHL Jun 18
   { year: 2022, when: 'Jul', places: ['Canada'] },
-  { year: 2022, when: 'Jul – Aug', places: ['Chicago'] }, // AA 1211 EWR-ORD, Hyatt House, Divvy rides Jul 28 – Aug 20
+  { year: 2022, when: 'Jul – Sep', places: ['Chicago'] }, // AA 1211 EWR-ORD, Hyatt House, Divvy rides Jul 28 – Aug 20, AA 552 ORD-EWR Sep 2
   { year: 2022, when: 'Nov', places: ['Portugal'] },
   { year: 2023, when: 'Jan', places: ['Chicago'] }, // UA PHL-ORD Jan 9, ORD-EWR Jan 14
   { year: 2023, when: 'Jan – Feb', places: ['Turkey'] },
