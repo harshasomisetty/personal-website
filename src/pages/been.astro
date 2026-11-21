@@ -29,25 +29,42 @@ const dots = places
   .map((p) => ({ name: p.name, id: p.id, xy: projection(p.dot!)! }));
 const pts = flights.points as Record<string, [number, number]>;
 
-// Route replay: each flight draws in date order over about 6 s; CSS only (see <style>).
-// Each line is faint, so a route flown many times ends up brighter.
+// Route replay: each flight draws at its real date, scaled to SPAN ms; CSS animations, which
+// the scrub bar script pauses, plays and seeks. Each line is faint, so a route flown many
+// times ends up brighter.
+const SPAN = 6500;
+const DRAW = 700; // ms for one line to draw
 const log = flights.log as [string, string, string][];
-const step = 6000 / log.length;
-const at = (i: number) => `${Math.round(i * step)}ms`;
-const flown = log.map(([a, b], i) => ({
+const day = (s: string) => Date.parse(`${s}T00:00:00Z`);
+const t0 = day(log[0][2]);
+const t1 = day(log.at(-1)![2]);
+const pos = (t: number) => Math.max(0, Math.round(((t - t0) / (t1 - t0)) * SPAN));
+const total = SPAN + DRAW;
+const flown = log.map(([a, b, d]) => ({
   d: path({ type: 'LineString', coordinates: [pts[a], pts[b]] } as any),
-  delay: at(i),
+  delay: `${pos(day(d))}ms`,
 }));
-const firstUse = new Map<string, number>();
-log.forEach(([a, b], i) => [a, b].forEach((x) => firstUse.has(x) || firstUse.set(x, i)));
-const airports = [...firstUse].map(([code, i]) => ({ xy: projection(pts[code])!, delay: at(i) }));
+const firstUse = new Map<string, string>();
+log.forEach(([a, b, d]) => [a, b].forEach((x) => firstUse.has(x) || firstUse.set(x, d)));
+const airports = [...firstUse].map(([code, d]) => ({ xy: projection(pts[code])!, delay: `${pos(day(d))}ms` }));
+// The label on the map shows the month under the play head.
+const months: { label: string; from: number }[] = [];
+for (let d = new Date(t0); d.getTime() <= t1; d.setUTCMonth(d.getUTCMonth() + 1, 1)) {
+  months.push({
+    label: d.toLocaleDateString('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' }),
+    from: pos(d.getTime()),
+  });
+}
+const monthMarks = months.map((m, k) => ({ ...m, to: k + 1 < months.length ? months[k + 1].from : total }));
 const logYears = [...new Set(log.map((f) => f[2].slice(0, 4)))];
-const yearMarks = logYears.map((y, k) => ({
+// Under the scrub bar: a tick at each 1 January, and each year's label in the middle of its span.
+const pct = (ms: number) => (ms / total) * 100;
+const bounds = [...logYears.map((y) => pos(Date.UTC(+y, 0, 1))), SPAN];
+const yearTicks = logYears.map((y, k) => ({
   year: y,
-  from: at(log.findIndex((f) => f[2].startsWith(y))),
-  to: k + 1 < logYears.length ? at(log.findIndex((f) => f[2].startsWith(logYears[k + 1]))) : at(log.length + 15),
+  tick: k > 0 ? pct(bounds[k]) : null,
+  mid: pct((bounds[k] + bounds[k + 1]) / 2),
 }));
-const replayEnd = at(log.length + 15);
 
 // Timeline: trips grouped by year, newest first. A typo in a trip fails the build.
 // A trip place is a country (or territory) name, or a city in one of the country lists.
@@ -110,7 +127,6 @@ const highlight = places
         <h1 class="font-mono text-sm font-semibold uppercase tracking-[0.2em] text-amber-500">Been</h1>
         <p class="font-mono text-xs text-neutral-500">{countryCount} countries and Antarctica</p>
       </header>
-      <div class="relative">
       <div class="relative" data-map>
       <svg
         viewBox={`0 0 ${width} ${height}`}
@@ -167,19 +183,64 @@ const highlight = places
         </g>
       </svg>
         <div class="pointer-events-none absolute bottom-4 left-5 font-mono text-sm text-amber-500" aria-hidden="true">
-          {yearMarks.map((m) => <span class="yr absolute bottom-0 left-0" style={`--a:${m.from};--b:${m.to}`}>{m.year}</span>)}
-          <span class="yr final absolute bottom-0 left-0 whitespace-nowrap" style={`--a:${replayEnd}`}>
+          {
+            monthMarks.map((m) => (
+              <span class="yr absolute bottom-0 left-0 whitespace-nowrap" style={`--a:${m.from}ms;--b:${m.to}ms`}>
+                {m.label}
+              </span>
+            ))
+          }
+          <span class="yr final absolute bottom-0 left-0 whitespace-nowrap" style={`--a:${total}ms`}>
             {`${logYears[0]} – ${logYears.at(-1)}`}
           </span>
         </div>
       </div>
-      <button
-        type="button"
-        data-replay
-        class="absolute right-4 bottom-3 rounded-full border border-neutral-800 bg-neutral-950/80 px-3 py-1 font-mono text-xs text-neutral-400 transition-colors hover:border-neutral-600 hover:text-neutral-100"
-      >
-        ↻ Replay
-      </button>
+
+      <div class="flex items-center gap-3 border-t border-neutral-800 px-4 pt-3 pb-1 sm:px-5" data-scrub data-total={total}>
+        <button
+          type="button"
+          data-play
+          data-state="playing"
+          aria-label="Pause"
+          class="group grid size-8 shrink-0 place-items-center rounded-full border border-neutral-800 text-neutral-300 transition-colors hover:border-neutral-600 hover:text-white"
+        >
+          <svg viewBox="0 0 16 16" class="hidden size-3.5 group-data-[state=playing]:block" fill="currentColor">
+            <rect x="3" y="2" width="3.5" height="12" rx="1" /><rect x="9.5" y="2" width="3.5" height="12" rx="1" />
+          </svg>
+          <svg viewBox="0 0 16 16" class="hidden size-3.5 group-data-[state=paused]:block" fill="currentColor">
+            <path d="M4 2.5v11a1 1 0 0 0 1.5.86l9-5.5a1 1 0 0 0 0-1.72l-9-5.5A1 1 0 0 0 4 2.5z" />
+          </svg>
+          <svg viewBox="0 0 16 16" class="hidden size-4 group-data-[state=ended]:block" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+            <path d="M13 8a5 5 0 1 1-1.5-3.6M13 2.5v3h-3" />
+          </svg>
+        </button>
+        <div class="relative flex-1 pb-5">
+          <div class="relative h-6">
+            <div class="absolute inset-x-0 top-1/2 h-1 -translate-y-1/2 overflow-hidden rounded-full bg-neutral-800">
+              <div class="clock h-full w-full origin-left bg-amber-500" style={`--t:${total}ms`}></div>
+            </div>
+            <div class="thumb pointer-events-none absolute top-1/2 size-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-amber-400 ring-4 ring-neutral-950" style={`--t:${total}ms`}></div>
+            <input
+              type="range"
+              min="0"
+              max={total}
+              step="10"
+              value={total}
+              aria-label="Replay position"
+              class="peer absolute inset-0 h-full w-full cursor-pointer opacity-0"
+            />
+          </div>
+          <div class="pointer-events-none absolute inset-x-0 bottom-0 h-4 font-mono text-[10px] text-neutral-500">
+            {
+              yearTicks.map((t) => (
+                <>
+                  {t.tick !== null && <span class="absolute -top-2.5 h-1.5 w-px bg-neutral-700" style={`left:${t.tick}%`} />}
+                  <span class="absolute top-0 -translate-x-1/2" style={`left:${t.mid}%`}>{t.year}</span>
+                </>
+              ))
+            }
+          </div>
+        </div>
       </div>
       <dl class="grid grid-cols-3 border-t border-neutral-800">
         {
@@ -331,11 +392,71 @@ const highlight = places
 </Base>
 
 <script>
-  // Replay: a fresh copy of the map starts its CSS animations again.
-  document.querySelector('[data-replay]')?.addEventListener('click', () => {
-    const map = document.querySelector('[data-map]');
-    map?.replaceWith(map.cloneNode(true));
-  });
+  // Scrub bar for the route replay. Every part of the replay is a CSS animation that starts on
+  // page load; this drives them all from one clock (the bar fill) with the Web Animations API.
+  const bar = document.querySelector<HTMLElement>('[data-scrub]');
+  const map = document.querySelector<HTMLElement>('[data-map]');
+  if (bar && map) {
+    const total = Number(bar.dataset.total);
+    const button = bar.querySelector<HTMLButtonElement>('[data-play]')!;
+    const range = bar.querySelector<HTMLInputElement>('input[type=range]')!;
+    const anims = () => [...map.getAnimations({ subtree: true }), ...bar.getAnimations({ subtree: true })];
+    const clock = () => bar.querySelector('.clock')!.getAnimations()[0];
+    const now = () => Number(clock()?.currentTime ?? total);
+    let state: 'playing' | 'paused' | 'ended' = 'playing';
+
+    const show = (s: typeof state) => {
+      state = s;
+      button.dataset.state = s;
+      button.ariaLabel = s === 'playing' ? 'Pause' : s === 'paused' ? 'Play' : 'Replay';
+    };
+    const seek = (t: number) => anims().forEach((a) => (a.currentTime = t));
+    const pause = () => {
+      anims().forEach((a) => a.pause());
+      show('paused');
+    };
+    const play = (from = now()) => {
+      // play() rewinds a finished animation, so set the time again after it.
+      anims().forEach((a) => {
+        a.play();
+        a.currentTime = from;
+      });
+      show('playing');
+      tick();
+    };
+    const tick = () => {
+      if (state !== 'playing') return;
+      const t = now();
+      range.value = String(t);
+      if (t >= total) return show('ended');
+      requestAnimationFrame(tick);
+    };
+
+    button.addEventListener('click', () =>
+      state === 'playing' ? pause() : play(state === 'ended' ? 0 : now()),
+    );
+    let resume = false;
+    range.addEventListener('pointerdown', () => {
+      resume = state === 'playing';
+      if (resume) pause();
+    });
+    range.addEventListener('input', () => {
+      if (state === 'playing') pause();
+      seek(Number(range.value));
+      if (Number(range.value) >= total) show('ended');
+      else if (state === 'ended') show('paused');
+    });
+    range.addEventListener('change', () => {
+      if (resume && Number(range.value) < total) play(Number(range.value));
+      resume = false;
+    });
+
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      seek(total);
+      pause();
+      show('ended');
+    } else tick();
+  }
 </script>
 
 <style>
@@ -355,6 +476,25 @@ const highlight = places
       show 1ms var(--a) forwards,
       hide 1ms var(--b, 9999s) forwards;
   }
+  .clock {
+    animation: grow var(--t) linear forwards;
+  }
+  .thumb {
+    animation: slide var(--t) linear forwards;
+  }
+  @keyframes grow {
+    from {
+      transform: scaleX(0);
+    }
+  }
+  @keyframes slide {
+    from {
+      left: 0%;
+    }
+    to {
+      left: 100%;
+    }
+  }
   @keyframes draw {
     to {
       stroke-dashoffset: 0;
@@ -368,20 +508,6 @@ const highlight = places
   @keyframes hide {
     to {
       opacity: 0;
-    }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .fly,
-    .pop,
-    .yr {
-      animation: none;
-    }
-    .fly {
-      stroke-dashoffset: 0;
-    }
-    .pop,
-    .yr.final {
-      opacity: 1;
     }
   }
 </style>
