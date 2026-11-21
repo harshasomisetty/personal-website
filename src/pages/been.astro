@@ -1,7 +1,7 @@
 ---
 import Stamp from '@/components/Stamp.astro';
 import Base from '@/layouts/Base.astro';
-import { continentCount, countryCount, places, regions, trips } from '@/been';
+import { continentCount, countryCount, places, regions, trips, voyages } from '@/been';
 import flights from '@/flights.json';
 import { geoArea, geoBounds, geoContains, geoEqualEarth, geoGraticule10, geoPath } from 'd3-geo';
 import { feature } from 'topojson-client';
@@ -14,6 +14,17 @@ import world10 from 'world-atlas/countries-10m.json';
 const width = 960;
 const height = 470;
 const countries = feature(world as any, (world as any).objects.countries) as any;
+// The 110m map draws Svalbard as part of Norway. Split it out (polygons north of 74°N),
+// so it lights up with its own trip.
+const norway = countries.features.find((f: any) => f.id === '578');
+const arctic = (poly: number[][][]) => poly[0].some(([, lat]) => lat > 74);
+countries.features.push({
+  type: 'Feature',
+  id: '744',
+  properties: { name: 'Svalbard' },
+  geometry: { type: 'MultiPolygon', coordinates: norway.geometry.coordinates.filter(arctic) },
+});
+norway.geometry.coordinates = norway.geometry.coordinates.filter((p: number[][][]) => !arctic(p));
 const projection = geoEqualEarth().fitExtent([[2, 2], [width - 2, height - 2]], { type: 'Sphere' } as any);
 const path = geoPath(projection).digits(1);
 const visited = new Set(places.map((p) => p.id));
@@ -67,6 +78,15 @@ const flown = log.map(([a, b, d]) => ({
 }));
 const firstUse = new Map<string, string>();
 log.forEach(([a, b, d]) => [a, b].forEach((x) => firstUse.has(x) || firstUse.set(x, d)));
+const boats = voyages
+  .filter((v) => v.boat)
+  .map((v) => ({
+    d: path({ type: 'LineString', coordinates: v.boat } as any),
+    delay: `${pos(day(v.date))}ms`,
+    end: projection(v.boat!.at(-1)!)!,
+    // The boat shows when the line is drawn.
+    shown: `${pos(day(v.date)) + DRAW - 200}ms`,
+  }));
 const airports = [...firstUse].map(([code, d]) => ({ xy: projection(pts[code])!, delay: `${pos(day(d))}ms` }));
 // The label on the map shows the month under the play head.
 const months: { label: string; from: number }[] = [];
@@ -124,7 +144,10 @@ const shade = (k: number) => {
 const FADE = 200;
 const lightCss = [...visited]
   .map((id) => {
-    const hits = log.filter(([a, b]) => mapId(a) === id || mapId(b) === id).map((f) => pos(day(f[2])));
+    const hits = [
+      ...log.filter(([a, b]) => mapId(a) === id || mapId(b) === id).map((f) => pos(day(f[2]))),
+      ...voyages.filter((v) => places.find((p) => p.name === v.place)?.id === id).map((v) => pos(day(v.date)) + (v.boat ? DRAW : 0)),
+    ].sort((x, y) => x - y);
     const keys: [number, string][] = [[0, UNLIT]];
     let color = UNLIT;
     hits.forEach((t, k) => {
@@ -218,7 +241,7 @@ const highlight =
       <svg
         viewBox={`0 0 ${width} ${height}`}
         role="img"
-        aria-label={`World map: the visited countries in orange and ${flights.flights} flights in white, drawn in date order`}
+        aria-label={`World map: the visited countries in orange ${flights.flights} flights in white and boat trips in blue, drawn in date order`}
         class="w-full h-auto px-2 py-3"
       >
         <path d={sphere} fill="hsl(0 0% 6.5%)" stroke="hsl(0 0% 16%)" stroke-width="1" />
@@ -266,6 +289,18 @@ const highlight =
             ))
           }
           {airports.map((a) => <circle cx={a.xy[0]} cy={a.xy[1]} r="1.6" fill="white" class="pop" style={`--d:${a.delay}`} />)}
+          {
+            boats.map((b) => (
+              <>
+                <path d={b.d} class="fly" style={`--d:${b.delay}`} pathLength="1" fill="none" stroke="#7dd3fc" stroke-width="1.5" stroke-linecap="round" />
+                <g class="pop" style={`--d:${b.shown}`} transform={`translate(${b.end[0].toFixed(1)} ${b.end[1].toFixed(1)})`} fill="#7dd3fc">
+                  <path d="M-6 1h12l-2.5 3.5h-7z" />
+                  <path d="M-0.6 -8h1.2v8.5h-1.2z" />
+                  <path d="M1 -7.5l4.5 6h-4.5z" />
+                </g>
+              </>
+            ))
+          }
         </g>
       </svg>
         <div class="pointer-events-none absolute bottom-4 left-5 font-mono text-sm text-amber-500" aria-hidden="true">

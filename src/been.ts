@@ -63,6 +63,7 @@ export const trips: { when: string; year: number; places: string[] }[] = [
   { year: 2020, when: 'Jun', places: ['Atlanta', 'Houston'] },
   { year: 2020, when: 'Aug', places: ['Houston'] },
   { year: 2021, when: 'Aug', places: ['Hawaii'] },
+  { year: 2022, when: 'Mid', places: ['Canada'] },
   { year: 2022, when: 'Nov', places: ['Portugal'] },
   { year: 2023, when: 'Jan – Feb', places: ['Turkey'] },
   { year: 2023, when: 'Apr', places: ['Miami', 'Tampa'] },
@@ -103,6 +104,14 @@ export const trips: { when: string; year: number; places: string[] }[] = [
   { year: 2026, when: 'Sep – Oct', places: ['India'] },
   { year: 2026, when: 'Nov', places: ['Puerto Rico'] },
 ].reverse();
+
+// Travel that Flighty does not have, for the route replay on /been: the place lights up on
+// the date, and a boat trip also draws a line ([lon, lat] points, approximate).
+export const voyages: { date: string; place: string; boat?: [number, number][] }[] = [
+  { date: '2022-07-01', place: 'Canada' },
+  { date: '2024-12-10', place: 'Antarctica', boat: [[-68.3, -54.9], [-63.5, -64.6]] }, // Ushuaia to the Peninsula
+  { date: '2026-06-14', place: 'Svalbard', boat: [[15.6, 78.25], [11.9, 78.9], [12.5, 80.0]] }, // north from Longyearbyen
+];
 
 export const countryCount = places.filter((p) => !p.territory).length;
 export const continentCount = new Set(places.map((p) => p.region)).size;
