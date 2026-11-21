@@ -21,7 +21,7 @@ export const places: Place[] = [
     'Yellowstone', 'San Diego', 'Los Angeles', 'San Francisco', 'Seattle', 'Hawaii', 'Smoky Mountains',
     'Kansas City', 'Columbus', 'Alaska',
   ] },
-  { name: 'Canada', id: '124', flag: '🇨🇦', region: 'North America' },
+  { name: 'Canada', id: '124', flag: '🇨🇦', region: 'North America', cities: ['Victoria'] },
   { name: 'Mexico', id: '484', flag: '🇲🇽', region: 'North America', cities: ['Mexico City'] },
   { name: 'Panama', id: '591', flag: '🇵🇦', region: 'North America' },
   { name: 'Costa Rica', id: '188', flag: '🇨🇷', region: 'North America' },
@@ -59,7 +59,7 @@ export const places: Place[] = [
 // Trips from photo GPS data (2019 on) and Flighty, oldest first in this list. places = country, territory,
 // or city names from the lists above, in visit order. US drives near home are left out.
 export const trips: { when: string; year: number; places: string[] }[] = [
-  { year: 2018, when: 'Jul', places: ['Seattle', 'Alaska'] }, // from Flighty; no GPS photos
+  { year: 2018, when: 'Jul', places: ['Seattle', 'Alaska', 'Victoria'] }, // from Flighty; no GPS photos
   { year: 2019, when: 'Aug', places: ['United Kingdom', 'Belgium', 'Germany', 'Switzerland', 'Italy', 'France'] },
   { year: 2020, when: 'Jun', places: ['Atlanta', 'Houston'] },
   { year: 2020, when: 'Aug', places: ['Houston'] },
@@ -109,10 +109,12 @@ export const trips: { when: string; year: number; places: string[] }[] = [
 // Travel that Flighty does not have, for the route replay on /passport: the place lights up on
 // the date, and a boat trip also draws a line ([lon, lat] points, approximate).
 export const voyages: { date: string; places: string[]; boat?: [number, number][] }[] = [
-  // Alaska cruise from Seattle up the Inside Passage (approximate stops).
-  { date: '2018-07-30', places: ['United States'], boat: [
-    [-122.4, 47.6], [-123.3, 48.4], [-124.7, 49.6], [-127.5, 50.9], [-130.2, 53.9],
-    [-131.6, 55.3], [-134.4, 58.3], [-135.3, 59.45],
+  // Alaska cruise, a loop from Seattle: north outside Vancouver Island to Juneau, Skagway,
+  // Ketchikan, then back down the coast to Victoria, BC, and Seattle (approximate path).
+  { date: '2018-07-30', places: ['United States', 'Canada'], boat: [
+    [-122.4, 47.6], [-124.8, 48.45], [-128.5, 49.6], [-132.8, 52.6], [-136.0, 56.4],
+    [-134.4, 58.3], [-135.3, 59.45], [-134.9, 58.4], [-131.6, 55.3], [-129.4, 52.6],
+    [-127.3, 50.6], [-124.4, 49.3], [-123.37, 48.42], [-122.4, 47.6],
   ] },
   { date: '2022-07-01', places: ['Canada'] },
   { date: '2024-12-10', places: ['Antarctica'], boat: [[-68.3, -54.9], [-63.5, -64.6]] }, // Ushuaia to the Peninsula
