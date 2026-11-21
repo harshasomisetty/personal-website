@@ -67,6 +67,7 @@ export const trips: { when: string; year: number; places: string[] }[] = [
   { year: 2021, when: 'Aug', places: ['Hawaii'] },
   { year: 2022, when: 'Jul', places: ['Canada'] },
   { year: 2022, when: 'Nov', places: ['Portugal'] },
+  { year: 2023, when: 'Jan', places: ['Chicago'] }, // UA PHL-ORD Jan 9, ORD-EWR Jan 14
   { year: 2023, when: 'Jan – Feb', places: ['Turkey'] },
   { year: 2023, when: 'Apr', places: ['Miami', 'Tampa'] },
   { year: 2023, when: 'Oct – Nov', places: ['Netherlands'] },
