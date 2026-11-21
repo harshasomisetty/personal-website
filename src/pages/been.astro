@@ -415,20 +415,20 @@ const highlight =
                   ];
                   const st = stampOf(p);
                   const caption = (
-                    <p class="mt-1 flex items-baseline justify-center gap-1 text-center text-[11px] text-neutral-400 sm:text-xs">
+                    <p class="mt-1 flex items-baseline justify-center gap-1 text-center text-[10px] text-neutral-400 sm:text-xs">
                       <span aria-hidden="true" class="max-sm:hidden">{p.flag}</span>
                       <span class="truncate">{p.name}</span>
                     </p>
                   );
                   return subs.length > 1 ? (
-                    <li class="stamp-cell w-1/4 px-1 sm:px-2" data-c={p.id}>
+                    <li class="stamp-cell w-1/5 px-0.5 sm:w-1/4 sm:px-2" data-c={p.id}>
                       {/* One open at a time (name). The panel has no top, so it sits right under its
                           stamp; left/right come from the list (the ul), so no stamp moves. */}
                       <details class="group" name="stamp">
                         <summary class="stamp-wrap mx-auto block max-w-[120px] cursor-pointer list-none [&::-webkit-details-marker]:hidden">
                           <Stamp name={p.name} date={st.date} foot={st.foot} />
                           {caption}
-                          <p class="text-center font-mono text-[11px] text-neutral-600 group-hover:text-neutral-400">
+                          <p class="text-center font-mono text-[10px] whitespace-nowrap text-neutral-600 group-hover:text-neutral-400 sm:text-[11px]">
                             {subs.length} places <span class="inline-block transition-transform group-open:rotate-90">›</span>
                           </p>
                         </summary>
@@ -445,11 +445,11 @@ const highlight =
                       </details>
                     </li>
                   ) : (
-                    <li class="stamp-cell w-1/4 px-1 sm:px-2" data-c={p.id}>
+                    <li class="stamp-cell w-1/5 px-0.5 sm:w-1/4 sm:px-2" data-c={p.id}>
                       <div class="stamp-wrap mx-auto max-w-[120px]">
                         <Stamp name={p.name} date={st.date} foot={st.foot} />
                         {caption}
-                        {subs[0] && <p class="text-center font-mono text-[11px] text-neutral-600">{subs[0]}</p>}
+                        {subs[0] && <p class="truncate text-center font-mono text-[10px] text-neutral-600 sm:text-[11px]">{subs[0]}</p>}
                       </div>
                     </li>
                   );
