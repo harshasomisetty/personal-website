@@ -546,11 +546,21 @@ const highlight =
 </Base>
 
 <script>
-  // An open stamp closes on a click outside it or on Escape.
-  const closeStamps = (keep?: Element | null) =>
-    document.querySelectorAll('details[name=stamp][open]').forEach((d) => d !== keep && d.removeAttribute('open'));
-  document.addEventListener('click', (e) => closeStamps((e.target as Element).closest('details[name=stamp]')));
-  document.addEventListener('keydown', (e) => e.key === 'Escape' && closeStamps());
+  // An open stamp closes on a click outside it or on Escape. The outside click only closes:
+  // it is stopped (capture phase) so it does not also open another stamp or follow a link.
+  const openStamp = () => document.querySelector('details[name=stamp][open]');
+  document.addEventListener(
+    'click',
+    (e) => {
+      const open = openStamp();
+      if (!open || open.contains(e.target as Node)) return;
+      e.preventDefault();
+      e.stopPropagation();
+      open.removeAttribute('open');
+    },
+    true,
+  );
+  document.addEventListener('keydown', (e) => e.key === 'Escape' && openStamp()?.removeAttribute('open'));
 </script>
 
 <script>

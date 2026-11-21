@@ -20,10 +20,30 @@ const id = `s${h.toString(36)}`;
 const label = name.toUpperCase();
 const W = 160;
 const H = 120;
-// Fit the name: mono glyphs are about 0.6 em wide.
-const fit = (max: number, width: number) => Math.min(max, width / (label.length * 0.62));
+// The country name is the big text. A long name with a space goes on two lines, split where
+// the longer line is shortest ("DOMINICAN / REPUBLIC").
+const words = label.split(' ');
+let lines = [label];
+if (label.length > (shape === 'circle' ? 8 : 11) && words.length > 1) {
+  let best = Infinity;
+  for (let i = 1; i < words.length; i++) {
+    const two = [words.slice(0, i).join(' '), words.slice(i).join(' ')];
+    const long = Math.max(...two.map((l) => l.length));
+    if (long < best) [best, lines] = [long, two];
+  }
+}
+// Mono glyphs are about 0.6 em wide. max1/max2 = largest size for one line / two lines.
+const nameSize = (width: number, max1: number, max2: number) =>
+  Math.min(lines.length > 1 ? max2 : max1, width / (Math.max(...lines.map((l) => l.length)) * 0.62));
+// Baselines for the name lines, centered on cy (caps sit about 0.36 em above the baseline).
+const nameYs = (cy: number, size: number) =>
+  lines.map((_, k) => cy + (k - (lines.length - 1) / 2) * size * 1.08 + size * 0.36);
 const octagon = (x: number, y: number, w: number, hh: number, c: number) =>
   `${x + c},${y} ${x + w - c},${y} ${x + w},${y + c} ${x + w},${y + hh - c} ${x + w - c},${y + hh} ${x + c},${y + hh} ${x},${y + hh - c} ${x},${y + c}`;
+const shapeName = { circle: [90, 59, 18, 15], oval: [110, 52, 21, 16], rect: [124, 47, 22, 17], octagon: [122, 48, 22, 17] } as const;
+const [nw, ncy, n1, n2] = shapeName[shape];
+const size = nameSize(nw, n1, n2);
+const ys = nameYs(ncy, size);
 ---
 
 <svg
@@ -39,13 +59,12 @@ const octagon = (x: number, y: number, w: number, hh: number, c: number) =>
         <>
           <circle cx="80" cy="60" r="55" fill="none" stroke-width="2.5" />
           <circle cx="80" cy="60" r="46" fill="none" stroke-width="1" />
-          <path id={`${id}t`} d="M 46 60 A 34 34 0 0 1 114 60" fill="none" stroke="none" />
+          <path id={`${id}t`} d="M 43 60 A 37 37 0 0 1 117 60" fill="none" stroke="none" />
           <path id={`${id}b`} d="M 39 60 A 41 41 0 0 0 121 60" fill="none" stroke="none" />
-          <text font-size={fit(9.5, 96)} font-weight="700" stroke="none" text-anchor="middle" letter-spacing="0.5">
-            <textPath href={`#${id}t`} startOffset="50%">{label}</textPath>
+          <text font-size="9" font-weight="700" stroke="none" text-anchor="middle" letter-spacing="1">
+            <textPath href={`#${id}t`} startOffset="50%">{date || '★'}</textPath>
           </text>
-          <text x="80" y="66" font-size="15" font-weight="800" stroke="none" text-anchor="middle">{date || '★'}</text>
-          <text font-size="7" stroke="none" text-anchor="middle" letter-spacing="1.5">
+          <text font-size="6.5" stroke="none" text-anchor="middle" letter-spacing="1.5">
             <textPath href={`#${id}b`} startOffset="50%">{foot}</textPath>
           </text>
         </>
@@ -56,9 +75,8 @@ const octagon = (x: number, y: number, w: number, hh: number, c: number) =>
         <>
           <ellipse cx="80" cy="60" rx="76" ry="52" fill="none" stroke-width="2.5" />
           <ellipse cx="80" cy="60" rx="69" ry="45" fill="none" stroke-width="1" />
-          <text x="80" y="44" font-size={fit(11, 104)} font-weight="700" stroke="none" text-anchor="middle">{label}</text>
-          <text x="80" y="68" font-size="16" font-weight="800" stroke="none" text-anchor="middle">{date || '★'}</text>
-          <text x="80" y="86" font-size="7" stroke="none" text-anchor="middle" letter-spacing="1.5">{foot}</text>
+          <text x="80" y="82" font-size="11" font-weight="700" stroke="none" text-anchor="middle" letter-spacing="1">{date || '★'}</text>
+          <text x="80" y="94" font-size="6.5" stroke="none" text-anchor="middle" letter-spacing="1.5">{foot}</text>
         </>
       )
     }
@@ -76,13 +94,15 @@ const octagon = (x: number, y: number, w: number, hh: number, c: number) =>
               <polygon points={octagon(12, 16, 136, 88, 16)} fill="none" stroke-width="1" />
             </>
           )}
-          <text x="80" y="40" font-size={fit(12, 118)} font-weight="700" stroke="none" text-anchor="middle">{label}</text>
-          <line x1="28" y1="49" x2="132" y2="49" stroke-width="1" />
-          <text x="80" y="73" font-size="17" font-weight="800" stroke="none" text-anchor="middle">{date || '★'}</text>
-          <text x="80" y="92" font-size="7" stroke="none" text-anchor="middle" letter-spacing="1.5">{foot}</text>
+          <line x1="34" y1="70" x2="126" y2="70" stroke-width="1" />
+          <text x="80" y="84" font-size="11" font-weight="700" stroke="none" text-anchor="middle" letter-spacing="1">{date || '★'}</text>
+          <text x="80" y="95" font-size="6" stroke="none" text-anchor="middle" letter-spacing="1.5">{foot}</text>
         </>
       )
     }
+    {lines.map((l, k) => (
+      <text x="80" y={ys[k]} font-size={size} font-weight="800" stroke="none" text-anchor="middle">{l}</text>
+    ))}
   </g>
 </svg>
 
