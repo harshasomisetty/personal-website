@@ -1,0 +1,30 @@
+---
+import PageHeader from '@/components/PageHeader.astro';
+import Base from '@/layouts/Base.astro';
+import { getCollection } from 'astro:content';
+
+const posts = (await getCollection('blog')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const monthYear = (d: Date) =>
+  d.toLocaleDateString('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' });
+---
+
+<Base title="Writing" description="Essays by Harsha Somisetty.">
+  <section class="w-full max-w-[520px] mx-auto">
+    <PageHeader title="Writing" />
+    <ul class="space-y-6">
+      {
+        posts.map((post) => (
+          <li>
+            <a href={`/blog/${post.id}`} class="block group">
+              <span class="flex items-baseline justify-between gap-4">
+                <span class="text-lg text-neutral-100 group-hover:underline underline-offset-4">{post.data.title}</span>
+                <span class="shrink-0 font-mono text-xs text-neutral-500">{monthYear(post.data.date)}</span>
+              </span>
+              <span class="mt-1 block text-neutral-400">{post.data.summary}</span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+</Base>

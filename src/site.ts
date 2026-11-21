@@ -1,17 +1,11 @@
-import github from '@/icons/github.svg?raw';
-import instagram from '@/icons/instagram.svg?raw';
-import linkedin from '@/icons/linkedin.svg?raw';
-import substack from '@/icons/substack.svg?raw';
-import tiktok from '@/icons/tiktok.svg?raw';
-import x from '@/icons/x.svg?raw';
-import youtube from '@/icons/youtube.svg?raw';
-
 // Home page bio and the question under it; together they are the default meta description.
 export const bio = [
   'I thought societal success was all that mattered.',
   'So I taught myself to code at 15, triple majored in Math, CS, and Stats at 20, semi-retired at 22, and finished my bucket list at 24.',
 ];
 export const hook = 'But what comes next?';
+// Small line under the name on the home page.
+export const roles = ['writer', 'builder', 'traveler'];
 export const tagline = [...bio, hook].join(' ');
 
 export const business = {
@@ -32,15 +26,32 @@ export const facebookDomainVerification = [
   'uaiupa3wadsils21q6cn8ndl248prf',
 ];
 
-// Home page order.
-export const socials = [
-  { title: 'Instagram', href: 'https://www.instagram.com/harshasomisetty', icon: instagram },
-  { title: 'TikTok', href: 'https://www.tiktok.com/@harshasomisetty7', icon: tiktok },
-  { title: 'Substack', href: 'https://substack.com/@harshasomisetty', icon: substack },
-  { title: 'X', href: 'https://www.x.com/HarshaSomisetty', icon: x },
-  { title: 'Youtube', href: 'https://www.youtube.com/@harshasomisetty', icon: youtube },
-  { title: 'Linkedin', href: 'https://www.linkedin.com/in/harshasomisetty', icon: linkedin },
-  { title: 'Github', href: 'https://www.github.com/harshasomisetty', icon: github },
+// Home page link groups. Links that start with "/" stay on this site; the others open a new tab.
+export const linkGroups = [
+  {
+    title: 'Watch',
+    links: [
+      { title: 'Instagram', href: 'https://www.instagram.com/harshasomisetty' },
+      { title: 'TikTok', href: 'https://www.tiktok.com/@harshasomisetty7' },
+      { title: 'YouTube', href: 'https://www.youtube.com/@harshasomisetty' },
+    ],
+  },
+  {
+    title: 'Read',
+    links: [
+      { title: 'Blog', href: '/blog' },
+      { title: 'Substack', href: 'https://substack.com/@harshasomisetty' },
+      { title: 'X', href: 'https://www.x.com/HarshaSomisetty' },
+    ],
+  },
+  {
+    title: 'Work',
+    links: [
+      { title: 'Projects', href: '/projects' },
+      { title: 'LinkedIn', href: 'https://www.linkedin.com/in/harshasomisetty' },
+      { title: 'GitHub', href: 'https://www.github.com/harshasomisetty' },
+    ],
+  },
 ];
 
 // summary = the one-line description on the home page and /projects; tech = /projects only.

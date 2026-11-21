@@ -1,109 +1,78 @@
 ---
-// Home page teaser for /passport: a small static map (visited countries in amber, flight
-// routes in white), the headline count, and the key numbers. On hover the routes draw again.
+// Home page teaser for /passport: a dot-matrix world map (visited countries in amber, home in
+// white) and the key numbers under it. Built at build time; no JavaScript on the page.
 import { continentCount, countryCount, places } from '@/been';
 import flights from '@/flights.json';
-import { geoEqualEarth, geoPath } from 'd3-geo';
+import { geoBounds, geoContains, geoEqualEarth } from 'd3-geo';
 import { feature } from 'topojson-client';
 import world from 'world-atlas/countries-110m.json';
 
-const width = 960;
-const height = 470;
-const countries = (feature(world as any, (world as any).objects.countries) as any).features;
+const width = 520;
+const height = 254;
+const step = 2.4; // degrees between dots
 const projection = geoEqualEarth().fitExtent([[2, 2], [width - 2, height - 2]], { type: 'Sphere' } as any);
-const path = geoPath(projection).digits(0);
 const visited = new Set(places.map((p) => p.id));
-const lands = countries.map((f: any) => ({ d: path(f), lit: visited.has(f.id) }));
-const dots = places.filter((p) => p.dot).map((p) => projection(p.dot!)!);
+const lands = (feature(world as any, (world as any).objects.countries) as any).features.map((f: any) => ({
+  f,
+  b: geoBounds(f),
+  lit: visited.has(f.id),
+}));
+
+// Each dot is a zero-length path segment with a round cap, so a whole layer is one <path>.
+const dot = ([x, y]: [number, number]) => `M${x.toFixed(1)} ${y.toFixed(1)}h0`;
+let gray = '';
+let lit = '';
+for (let lat = 84; lat >= -86; lat -= step) {
+  for (let lon = -180; lon < 180; lon += step) {
+    const hit = lands.find(({ f, b: [[x0, y0], [x1, y1]] }: any) =>
+      lat >= y0 && lat <= y1 && (x0 > x1 || (lon >= x0 && lon <= x1)) && geoContains(f, [lon, lat]),
+    );
+    if (!hit) continue;
+    const d = dot(projection([lon, lat])!);
+    if (hit.lit) lit += d;
+    else gray += d;
+  }
+}
+// Places too small for the grid (islands, city states, Svalbard).
+for (const p of places) if (p.dot) lit += dot(projection(p.dot)!);
 const pts = flights.points as Record<string, [number, number]>;
-const routes = [...new Set((flights.log as string[][]).map(([a, b]) => [a, b].sort().join('-')))].map((r) => {
-  const [a, b] = r.split('-');
-  return path({ type: 'LineString', coordinates: [pts[a], pts[b]] } as any);
-});
-const home = projection(pts.EWR)!;
+const [hx, hy] = projection(pts.EWR)!;
 const num = (n: number) => n.toLocaleString('en-US');
 ---
 
 <a
   href="/passport"
-  class="passport-card group relative block overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-950 transition duration-300 hover:-translate-y-0.5 hover:border-amber-500/50 hover:shadow-[0_0_40px_-8px_rgb(245_158_11/0.35)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-amber-500"
+  class="passport group block focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-amber-500"
 >
-  <div class="flex items-baseline justify-between gap-4 px-4 pt-3.5 sm:px-5">
-    <span class="font-mono text-xs font-semibold uppercase tracking-[0.2em] text-amber-500">Passport</span>
-    <span class="font-mono text-xs text-neutral-500 transition-colors group-hover:text-amber-400">
-      Open <span class="inline-block transition-transform duration-300 group-hover:translate-x-1">→</span>
-    </span>
-  </div>
-
-  <p class="px-4 pt-2 text-xl font-semibold tracking-tight text-neutral-100 text-balance sm:px-5 sm:text-2xl">
-    Been to <span class="text-amber-500" style="text-shadow:0 0 14px rgb(245 158 11 / 0.45)">{countryCount} countries</span> and Antarctica
-  </p>
-
-  <svg viewBox={`0 0 ${width} ${height}`} class="mt-1 block h-auto w-full px-2" aria-hidden="true">
-    {lands.map((l: { d: string; lit: boolean }) => <path d={l.d} class={l.lit ? 'land lit' : 'land'} />)}
-    {dots.map(([x, y]) => <circle cx={x} cy={y} r="3.5" class="land lit" />)}
-    <g class="routes" fill="none" stroke="white" stroke-linecap="round">
-      {routes.map((d, i) => <path d={d} pathLength="1" style={`--i:${i % 40}`} />)}
-    </g>
-    <circle cx={home[0]} cy={home[1]} r="5" class="pulse" />
-    <circle cx={home[0]} cy={home[1]} r="3" fill="white" />
+  <svg viewBox={`0 0 ${width} ${height}`} class="block h-auto w-full" role="img" aria-label={`World map: ${countryCount} countries visited`}>
+    <path d={gray} class="dots" />
+    <path d={lit} class="dots lit" />
+    <circle cx={hx} cy={hy} r="2.6" fill="white" />
   </svg>
-
-  <div class="grid grid-cols-3 border-t border-neutral-800 font-mono text-[10px] whitespace-nowrap uppercase tracking-wide text-neutral-500 sm:text-[11px] sm:tracking-wider">
-    <span class="px-3 py-2.5 sm:px-5"><b class="font-semibold text-neutral-200">{num(flights.flights)}</b> flights</span>
-    <span class="border-l border-neutral-800 px-3 py-2.5 sm:px-5"><b class="font-semibold text-neutral-200">{Math.round(flights.miles / 1000)}k</b> miles</span>
-    <span class="border-l border-neutral-800 px-3 py-2.5 sm:px-5"><b class="font-semibold text-amber-500">{continentCount}/7</b> continents</span>
+  <div class="mt-3 flex items-baseline justify-between gap-3 font-mono text-[11px] text-neutral-500 sm:text-xs">
+    <span class="flex flex-wrap gap-x-3 gap-y-1 sm:gap-x-4">
+      <span><b class="font-semibold text-neutral-100">{countryCount}</b> countries</span>
+      <span><b class="font-semibold text-neutral-100">{num(flights.flights)}</b> flights</span>
+      <span><b class="font-semibold text-neutral-100">{continentCount}</b> continents</span>
+    </span>
+    <span class="shrink-0 text-amber-500">
+      Passport <span class="inline-block transition-transform duration-300 group-hover:translate-x-1">→</span>
+    </span>
   </div>
 </a>
 
 <style>
-  .land {
-    fill: #262626;
-    stroke: #0a0a0a;
-    stroke-width: 0.5;
+  .dots {
+    fill: none;
+    stroke: #2e2e2e;
+    stroke-width: 2.1;
+    stroke-linecap: round;
   }
-  .land.lit {
-    fill: #f59e0b;
-    transition: fill 0.3s;
+  .dots.lit {
+    stroke: #f59e0b;
+    transition: stroke 0.3s;
   }
-  .group:hover .land.lit {
-    fill: #fbbf24;
-  }
-  .routes path {
-    stroke-opacity: 0.22;
-    stroke-width: 0.9;
-    stroke-dasharray: 1;
-    transition: stroke-opacity 0.3s;
-  }
-  .group:hover .routes path {
-    stroke-opacity: 0.55;
-    animation: redraw 0.9s ease-out calc(var(--i) * 12ms) backwards;
-  }
-  .pulse {
-    fill: rgb(255 255 255 / 0.5);
-    transform-box: fill-box;
-    transform-origin: center;
-    animation: pulse 2.4s ease-out infinite;
-  }
-  @keyframes redraw {
-    from {
-      stroke-dashoffset: 1;
-    }
-  }
-  @keyframes pulse {
-    from {
-      transform: scale(1);
-      opacity: 0.8;
-    }
-    to {
-      transform: scale(4);
-      opacity: 0;
-    }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .pulse,
-    .group:hover .routes path {
-      animation: none;
-    }
+  .group:hover .dots.lit {
+    stroke: #fbbf24;
   }
 </style>
