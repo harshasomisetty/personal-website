@@ -5,7 +5,7 @@ export const bio = [
 ];
 export const hook = 'But what comes next?';
 // Small line under the name on the home page.
-export const roles = ['writer', 'builder', 'traveler'];
+export const roles = ['builder', 'seeker', 'traveler'];
 export const tagline = [...bio, hook].join(' ');
 
 export const business = {
