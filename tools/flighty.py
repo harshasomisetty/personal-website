@@ -20,7 +20,7 @@ me = db.execute('select remoteId from User').fetchone()[0]  # the signed-in Flig
 q = '''
 select f.departureAirportId, f.actualArrivalAirportId, f.airlineId, f.distance, f.lastKnownDepartureDate, f.lastKnownArrivalDate
 from UserFlight u join Flight f on f.id = u.flightId
-where u.userId = ? and u.isMyFlight and u.deleted is null and f.deleted is null and not f.isCancelled
+where u.userId = ? and u.isMyFlight and u.deleted is null and not f.isCancelled  -- f.deleted marks a stale shared record; the app still counts the flight
 union all
 select m.departureAirportId, m.actualArrivalAirportId, m.airlineId, m.distance, m.lastKnownDepartureDate, m.lastKnownArrivalDate
 from UserManualFlight u join ManualFlight m on m.id = u.flightId
