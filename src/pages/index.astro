@@ -1,16 +1,15 @@
 ---
 import PassportCard from '@/components/PassportCard.astro';
 import Base from '@/layouts/Base.astro';
-import { bio, business, hook, linkGroups, projects, roles } from '@/site';
+import { bio, business, featuredPosts, hook, linkGroups, projects, roles } from '@/site';
 import { getCollection } from 'astro:content';
 
-const posts = (await getCollection('blog'))
-  .sort(
-    (a, b) =>
-      Number(b.data.pinned) - Number(a.data.pinned) ||
-      b.data.date.valueOf() - a.data.date.valueOf(),
-  )
-  .slice(0, 4);
+const all = await getCollection('blog');
+const posts = featuredPosts.map((id) => {
+  const post = all.find((p) => p.id === id);
+  if (!post) throw new Error(`featuredPosts: no post content/blog/${id}.mdx`);
+  return post;
+});
 const monthYear = (d: Date) =>
   d.toLocaleDateString('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' });
 const external = (href: string) => !href.startsWith('/');

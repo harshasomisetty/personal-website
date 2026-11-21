@@ -6,6 +6,8 @@ export const bio = [
 export const hook = 'But what comes next?';
 // Small line under the name on the home page.
 export const roles = ['builder', 'seeker', 'traveler'];
+// Posts on the home page, in this order (file names in content/blog). /blog lists all posts.
+export const featuredPosts = ['my-life-till-25', 'vipassana', '6-months-into-sabattical'];
 export const tagline = [...bio, hook].join(' ');
 
 export const business = {

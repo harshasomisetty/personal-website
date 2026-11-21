@@ -8,8 +8,6 @@ const blog = defineCollection({
     title: z.string(),
     date: z.coerce.date(),
     summary: z.string(),
-    // Pinned posts list first on the home page.
-    pinned: z.boolean().default(false),
   }),
 });
 
