@@ -10,7 +10,7 @@
 /* The site is dark only. These match the old shadcn dark palette. */
 @theme {
   /* Harsha's "Editorial" style (chosen 2026-11-21), self-hosted with Fontsource:
-     Instrument Serif for the name and page titles (font-display, weight 400 only),
+     Instrument Serif only for the name on the home page and og.png (font-display, weight 400 only),
      Instrument Sans for all text, DM Mono for dates, labels, and numbers. */
   --font-display: 'Instrument Serif', ui-serif, Georgia, serif;
   --font-sans: 'Instrument Sans Variable', ui-sans-serif, system-ui, sans-serif;
