@@ -398,13 +398,13 @@ const highlight =
           const list = places.filter((p) => p.region === region && (!p.territory || p.id === '010'));
           return (
             <section>
-              <h2 class="mb-3 flex items-baseline justify-between border-b border-neutral-800 pb-2">
+              <h2 class="mb-4 flex items-baseline justify-center gap-2 border-b border-neutral-800 pb-2">
                 <span class="text-xl font-bold">{region}</span>
                 {region !== 'Antarctica' && (
                   <span class="font-mono text-xs text-neutral-500">{list.length}</span>
                 )}
               </h2>
-              <ul class="relative grid grid-cols-4 gap-x-2 gap-y-4 sm:gap-x-4">
+              <ul class="relative flex flex-wrap justify-center gap-y-4">
                 {list.map((p) => {
                   // A territory shows under its country (Puerto Rico under the United States).
                   const subs = [
@@ -421,9 +421,9 @@ const highlight =
                     </p>
                   );
                   return subs.length > 1 ? (
-                    <li class="stamp-cell" data-c={p.id}>
+                    <li class="stamp-cell w-1/4 px-1 sm:px-2" data-c={p.id}>
                       {/* One open at a time (name). The panel has no top, so it sits right under its
-                          stamp; left/right come from the grid (the ul), so no stamp moves. */}
+                          stamp; left/right come from the list (the ul), so no stamp moves. */}
                       <details class="group" name="stamp">
                         <summary class="stamp-wrap mx-auto block max-w-[120px] cursor-pointer list-none [&::-webkit-details-marker]:hidden">
                           <Stamp name={p.name} date={st.date} foot={st.foot} />
@@ -445,10 +445,12 @@ const highlight =
                       </details>
                     </li>
                   ) : (
-                    <li class="stamp-cell stamp-wrap mx-auto w-full max-w-[120px]" data-c={p.id}>
-                      <Stamp name={p.name} date={st.date} foot={st.foot} />
-                      {caption}
-                      {subs[0] && <p class="text-center font-mono text-[11px] text-neutral-600">{subs[0]}</p>}
+                    <li class="stamp-cell w-1/4 px-1 sm:px-2" data-c={p.id}>
+                      <div class="stamp-wrap mx-auto max-w-[120px]">
+                        <Stamp name={p.name} date={st.date} foot={st.foot} />
+                        {caption}
+                        {subs[0] && <p class="text-center font-mono text-[11px] text-neutral-600">{subs[0]}</p>}
+                      </div>
                     </li>
                   );
                 })}
