@@ -109,5 +109,3 @@ export const countryCount = places.filter((p) => !p.territory).length;
 export const worldPercent = Math.round((countryCount / worldCountries) * 100);
 export const continentCount = new Set(places.map((p) => p.region)).size;
 
-// His own total (2026-11-21), not computed from the trips above.
-export const milesTraveled = '320k';

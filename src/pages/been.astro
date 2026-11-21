@@ -3,7 +3,6 @@ import Base from '@/layouts/Base.astro';
 import {
   continentCount,
   countryCount,
-  milesTraveled,
   places,
   regions,
   trips,
@@ -12,6 +11,7 @@ import {
 import { geoEqualEarth, geoGraticule10, geoPath } from 'd3-geo';
 import { feature } from 'topojson-client';
 import world from 'world-atlas/countries-110m.json';
+import flights from '@/flights.json';
 
 // The map renders to a static SVG at build time; the page ships no map JavaScript.
 const width = 960;
@@ -42,11 +42,39 @@ const years = [...new Set(trips.map((t) => t.year))];
 const inTrips = new Set(trips.flatMap((t) => t.places.map((n) => placeOf(n)!.name)));
 const undated = places.filter((p) => !inTrips.has(p.name) && p.name !== 'United States');
 
+// Flights (src/flights.json, from tools/flighty.py): great-circle routes on a map cropped to the airports.
+const pts = flights.points as Record<string, [number, number]>;
+const airportsGeo = { type: 'MultiPoint', coordinates: Object.values(pts) } as any;
+const fp = geoEqualEarth().fitWidth(width, airportsGeo);
+const fpath = geoPath(fp).digits(1);
+const [[bx0, by0], [bx1, by1]] = fpath.bounds(airportsGeo);
+const pad = 24;
+const fbox = `${Math.round(bx0 - pad)} ${Math.round(by0 - pad)} ${Math.round(bx1 - bx0 + 2 * pad)} ${Math.round(by1 - by0 + 2 * pad)}`;
+const fland = countries.features.map((f: any) => fpath(f));
+const froutes = (flights.routes as [string, string, number][]).map(([a, b, n]) => ({
+  d: fpath({ type: 'LineString', coordinates: [pts[a], pts[b]] } as any),
+  w: (0.7 + Math.log2(n) * 0.5).toFixed(2),
+}));
+const fdots = Object.values(pts).map((c) => fp(c)!);
+const num = (n: number) => n.toLocaleString('en-US');
+const month = (ym: string) =>
+  new Date(`${ym}-01T00:00:00Z`).toLocaleDateString('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' });
+const flightStats = [
+  { value: num(flights.flights), label: 'Flights' },
+  { value: num(flights.miles), label: 'Miles' },
+  { value: num(flights.hours), label: 'Hours in the air' },
+  { value: flights.airports, label: 'Airports' },
+  { value: flights.airlines, label: 'Airlines' },
+  { value: `${flights.aroundEarth}×`, label: 'Around the Earth' },
+];
+// A passport-style machine-readable line, padded with < to a fixed width.
+const mrz = `P<FLIGHTS<<${flights.flights}<<MILES<<${flights.miles}<<AIRPORTS<<${flights.airports}<<SINCE<<${flights.since.replace('-', '')}`.padEnd(64, '<');
+
 const stats = [
   { value: countryCount, label: 'Countries' },
   { value: `${worldPercent}%`, label: 'Of the world' },
   { value: `${continentCount}/7`, label: 'Continents' },
-  { value: milesTraveled, label: 'Miles traveled' },
+  { value: `${Math.round(flights.miles / 1000)}k`, label: 'Miles flown' },
 ];
 
 // Hover a country (or a city in it) in the list and its shape lights up on the map. CSS only.
@@ -178,6 +206,68 @@ const highlight = places
         })
       }
     </div>
+
+    <section class="mt-16 overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-950">
+      <div class="flex items-baseline justify-between border-b border-neutral-800 px-5 py-3">
+        <h2 class="font-mono text-sm font-semibold uppercase tracking-[0.2em] text-amber-500">Flights</h2>
+        <p class="font-mono text-xs text-neutral-500">Since {month(flights.since)}</p>
+      </div>
+      <svg viewBox={fbox} role="img" aria-label={`Map of ${flights.routes.length} flight routes`} class="w-full h-auto">
+        {fland.map((d: string) => <path d={d} class="fill-neutral-900" stroke="hsl(0 0% 3.9%)" stroke-width="0.5" />)}
+        {froutes.map((r) => <path d={r.d} fill="none" class="stroke-amber-500/60" stroke-width={r.w} stroke-linecap="round" />)}
+        {fdots.map(([x, y]) => <circle cx={x} cy={y} r="1.8" class="fill-neutral-100" />)}
+      </svg>
+      <dl class="grid grid-cols-2 border-t border-neutral-800 sm:grid-cols-3">
+        {
+          flightStats.map((s, i) => (
+            <div
+              class:list={[
+                'border-neutral-800 px-5 py-4',
+                // 2 columns on phones, 3 from sm up.
+                i % 2 === 1 && 'max-sm:border-l',
+                i > 1 && 'max-sm:border-t',
+                i % 3 !== 0 && 'sm:border-l',
+                i > 2 && 'sm:border-t',
+              ]}
+            >
+              <dd class="text-2xl font-semibold tracking-tight tabular-nums text-neutral-100">{s.value}</dd>
+              <dt class="mt-1 text-xs uppercase tracking-wider text-neutral-500">{s.label}</dt>
+            </div>
+          ))
+        }
+      </dl>
+      <div class="grid gap-6 border-t border-neutral-800 px-5 py-5 sm:grid-cols-2">
+        <div>
+          <h3 class="mb-2 text-xs uppercase tracking-wider text-neutral-500">Top airports</h3>
+          <ol class="space-y-1 text-sm">
+            {flights.topAirports.map((a) => (
+              <li class="flex items-baseline gap-3">
+                <span class="w-9 font-mono text-amber-500">{a.code}</span>
+                <span class="flex-1 text-neutral-300">{a.city}</span>
+                <span class="font-mono text-xs text-neutral-500">{a.visits}</span>
+              </li>
+            ))}
+          </ol>
+        </div>
+        <div>
+          <h3 class="mb-2 text-xs uppercase tracking-wider text-neutral-500">Top airlines</h3>
+          <ol class="space-y-1 text-sm">
+            {flights.topAirlines.map((a) => (
+              <li class="flex items-baseline gap-3">
+                <span class="flex-1 text-neutral-300">{a.name}</span>
+                <span class="font-mono text-xs text-neutral-500">{a.flights}</span>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </div>
+      <p class="border-t border-neutral-800 px-5 py-3 text-sm text-neutral-400">
+        {`Longest flight: ${flights.longest.from} → ${flights.longest.to} · ${num(flights.longest.miles)} miles`}
+      </p>
+      <p aria-hidden="true" class="overflow-hidden bg-neutral-900/60 px-5 py-2 font-mono text-[11px] tracking-[0.15em] whitespace-nowrap text-neutral-600">
+        {mrz}
+      </p>
+    </section>
 
     <section class="mt-16">
       <h2 class="mb-1 text-xl font-bold">Timeline</h2>
