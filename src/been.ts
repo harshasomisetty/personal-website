@@ -56,9 +56,10 @@ export const places: Place[] = [
   { name: 'Antarctica', id: '010', flag: '🇦🇶', region: 'Antarctica', territory: 'no country' },
 ];
 
-// Trips from photo GPS data (2019 on), oldest first in this list. places = country, territory,
+// Trips from photo GPS data (2019 on) and Flighty, oldest first in this list. places = country, territory,
 // or city names from the lists above, in visit order. US drives near home are left out.
 export const trips: { when: string; year: number; places: string[] }[] = [
+  { year: 2018, when: 'Jul', places: ['Seattle'] }, // from Flighty; no GPS photos
   { year: 2019, when: 'Aug', places: ['United Kingdom', 'Belgium', 'Germany', 'Switzerland', 'Italy', 'France'] },
   { year: 2020, when: 'Jun', places: ['Atlanta', 'Houston'] },
   { year: 2020, when: 'Aug', places: ['Houston'] },
