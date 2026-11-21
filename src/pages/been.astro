@@ -548,7 +548,12 @@ const highlight =
       button.dataset.state = s;
       button.ariaLabel = s === 'playing' ? 'Pause' : s === 'paused' ? 'Play' : 'Replay';
     };
-    const seek = (t: number) => anims().forEach((a) => (a.currentTime = t));
+    // Pause first: a finished animation that is only seeked starts to run again.
+    const seek = (t: number) =>
+      anims().forEach((a) => {
+        a.pause();
+        a.currentTime = t;
+      });
     const pause = () => {
       anims().forEach((a) => a.pause());
       show('paused');
