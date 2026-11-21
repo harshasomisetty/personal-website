@@ -54,9 +54,11 @@ out = {
     'points': {v[0]: [round(v[3], 3), round(v[2], 3)] for k, v in airports.items() if v[0] in visits},  # [lon, lat]
     'country': {v[0]: v[4] for v in airports.values() if v[0] in visits},  # ISO alpha-2 per airport
     'routes': len(routes),
-    # Every flight in date order, for the route replay: [from, to, 'YYYY-MM-DD' local departure date].
-    'log': [[airports[d][0], airports[a][0], datetime.fromtimestamp(t, ZoneInfo(airports[d][5] or 'UTC')).strftime('%Y-%m-%d')]
-            for d, a, _, _, t, _ in sorted(flights, key=lambda r: r[4])],
+    # Every flight in date order, for the route replay and the stats that count up with it:
+    # [from, to, 'YYYY-MM-DD' local departure date, miles, minutes in the air, airline].
+    'log': [[airports[d][0], airports[a][0], datetime.fromtimestamp(t, ZoneInfo(airports[d][5] or 'UTC')).strftime('%Y-%m-%d'),
+             round(km * KM_TO_MI), round((t2 - t) / 60) if t2 else 0, airlines.get(al, '?')]
+            for d, a, al, km, t, t2 in sorted(flights, key=lambda r: r[4])],
 }
 OUT.write_text(json.dumps(out, indent=1, ensure_ascii=False) + '\n')
 shutil.rmtree(tmp)

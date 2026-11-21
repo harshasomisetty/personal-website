@@ -44,9 +44,10 @@ const pts = flights.points as Record<string, [number, number]>;
 // Route replay: each flight draws at its real date, scaled to SPAN ms; CSS animations, which
 // the scrub bar script pauses, plays and seeks. Each line is faint, so a route flown many
 // times ends up brighter.
-const SPAN = 2650;
 const DRAW = 350; // ms for one line to draw
-const log = flights.log as [string, string, string][];
+const SPAN = 2000 - DRAW; // the last line ends at 2 s
+// [from, to, date, miles, minutes, airline]
+const log = flights.log as [string, string, string, number, number, string][];
 const day = (s: string) => Date.parse(`${s}T00:00:00Z`);
 const t0 = day(log[0][2]);
 const t1 = day(log.at(-1)![2]);
@@ -136,14 +137,18 @@ const shade = (k: number) => {
   return '#' + ca.map((c, j) => Math.round(c + (cb[j] - c) * u).toString(16).padStart(2, '0')).join('');
 };
 const FADE = 150;
+const hitsOf = (id: string) =>
+  [
+    ...log.flatMap(([a, b], i) => (mapId(a) === id || mapId(b) === id ? [at(i)] : [])),
+    ...voyages
+      .filter((v) => v.places.some((n) => places.find((p) => p.name === n)?.id === id))
+      .map((v) => pos(day(v.date)) + (v.boat ? DRAW : 0)),
+  ].sort((x, y) => x - y);
+// When a place lights up: its first flight or boat trip, else the end of the replay.
+const litAt = (id: string) => hitsOf(id)[0] ?? SPAN;
 const lightCss = [...visited]
   .map((id) => {
-    const hits = [
-      ...log.flatMap(([a, b], i) => (mapId(a) === id || mapId(b) === id ? [at(i)] : [])),
-      ...voyages
-        .filter((v) => v.places.some((n) => places.find((p) => p.name === n)?.id === id))
-        .map((v) => pos(day(v.date)) + (v.boat ? DRAW : 0)),
-    ].sort((x, y) => x - y);
+    const hits = hitsOf(id);
     const keys: [number, string][] = [[0, UNLIT]];
     let color = UNLIT;
     hits.forEach((t, k) => {
@@ -199,20 +204,50 @@ const stampOf = (c: (typeof places)[number]) => {
 // 3 x 3 grid. amber = places, white = flights (the same colors as the map).
 const num = (n: number) => n.toLocaleString('en-US');
 const stats = [
-  { value: num(flights.flights), label: 'Flights' },
-  { value: countryCount, label: 'Countries', amber: true },
-  { value: num(flights.miles), label: 'Miles' },
-  { value: `${flights.aroundEarth}×`, label: 'Around Earth' },
-  { value: num(flights.hours), label: 'Hours in air' },
-  { value: flights.airports, label: 'Airports' },
-  { value: `${continentCount}/7`, label: 'Continents', amber: true },
-  { value: flights.airlines, label: 'Airlines' },
+  { key: 'flights', value: num(flights.flights), label: 'Flights' },
+  { key: 'countries', value: countryCount, label: 'Countries', amber: true },
+  { key: 'miles', value: num(flights.miles), label: 'Miles' },
+  { key: 'earth', value: `${flights.aroundEarth}×`, label: 'Around Earth' },
+  { key: 'hours', value: num(flights.hours), label: 'Hours in air' },
+  { key: 'airports', value: flights.airports, label: 'Airports' },
+  { key: 'continents', value: `${continentCount}/7`, label: 'Continents', amber: true },
+  { key: 'airlines', value: flights.airlines, label: 'Airlines' },
   {
+    key: 'longest',
     value: `${num(flights.longest.miles)} mi`,
     label: 'Longest flight',
     note: `${flights.longest.from} → ${flights.longest.to}`,
   },
 ];
+// The stats count up with the replay. Each row: [ms, flights, countries, miles, hours, airports,
+// continents, airlines, longest miles, longest from, longest to]. The last row is the exact total.
+const moments = [
+  ...log.map((_, i) => at(i)),
+  ...places.map((p) => litAt(p.id)),
+].filter((t, k, all) => all.indexOf(t) === k).sort((x, y) => x - y);
+const series = moments.map((t) => {
+  const done = log.filter((_, i) => at(i) <= t);
+  const lit = places.filter((p) => litAt(p.id) <= t);
+  const longest = done.reduce((m, f) => (f[3] > m[3] ? f : m), done[0] ?? ['', '', '', 0, 0, '']);
+  return [
+    t,
+    done.length,
+    lit.filter((p) => !p.territory).length,
+    done.reduce((s, f) => s + f[3], 0),
+    Math.round(done.reduce((s, f) => s + f[4], 0) / 60),
+    new Set(done.flatMap((f) => [f[0], f[1]])).size,
+    new Set(lit.map((p) => p.region)).size,
+    new Set(done.map((f) => f[5])).size,
+    longest[3],
+    longest[0],
+    longest[1],
+  ];
+});
+series.push([
+  SPAN, flights.flights, countryCount, flights.miles, flights.hours, flights.airports, continentCount,
+  flights.airlines, flights.longest.miles, flights.longest.from, flights.longest.to,
+]);
+
 // A passport-style machine-readable line, padded with < to a fixed width.
 const mrz = `P<PASSPORT<<${countryCount}<COUNTRIES<<${flights.flights}<FLIGHTS<<${flights.miles}<MILES`.padEnd(72, '<');
 
@@ -367,6 +402,7 @@ const highlight =
           </div>
         </div>
       </div>
+      <script type="application/json" id="stat-series" set:html={JSON.stringify(series)} />
       <dl class="grid grid-cols-3 border-t border-neutral-800">
         {
           stats.map((s, i) => (
@@ -386,14 +422,14 @@ const highlight =
                 ]}
                 style={s.amber ? 'text-shadow:0 0 14px rgb(245 158 11 / 0.5)' : 'text-shadow:0 0 14px rgb(255 255 255 / 0.3)'}
               >
-                {s.value}
-                {s.note && <span class="ml-1.5 font-mono text-xs font-normal tracking-normal text-neutral-500 max-sm:hidden">{s.note}</span>}
+                <span data-v={s.key}>{s.value}</span>
+                {s.note && <span data-n class="ml-1.5 font-mono text-xs font-normal tracking-normal text-neutral-500 max-sm:hidden">{s.note}</span>}
               </dd>
               <dt class="mt-1 text-[10px] whitespace-nowrap uppercase tracking-wide text-neutral-500 sm:text-xs sm:tracking-wider">
                 {/* A phone has no room for both: the route stands in for the label. */}
                 {s.note ? (
                   <>
-                    <span class="font-mono sm:hidden">{s.note}</span>
+                    <span data-n class="font-mono sm:hidden">{s.note}</span>
                     <span class="max-sm:hidden">{s.label}</span>
                   </>
                 ) : (
@@ -579,17 +615,49 @@ const highlight =
     const now = () => Number(clock()?.currentTime ?? total);
     let state: 'playing' | 'paused' | 'ended' = 'playing';
 
+    // The stats show the values at time t: the last row at or before t.
+    type Row = [number, number, number, number, number, number, number, number, number, string, string];
+    const series: Row[] = JSON.parse(document.getElementById('stat-series')?.textContent ?? '[]');
+    const fmt = (n: number) => n.toLocaleString('en-US');
+    const el = (k: string) => document.querySelector<HTMLElement>(`[data-v="${k}"]`);
+    const out = {
+      flights: el('flights'), countries: el('countries'), miles: el('miles'), earth: el('earth'),
+      hours: el('hours'), airports: el('airports'), continents: el('continents'),
+      airlines: el('airlines'), longest: el('longest'),
+    };
+    const notes = [...document.querySelectorAll<HTMLElement>('[data-n]')];
+    let shown = -1;
+    const stats = (t: number) => {
+      let k = series.findLastIndex((r) => r[0] <= t);
+      if (k === shown) return;
+      shown = k;
+      const r: Row = k < 0 ? [0, 0, 0, 0, 0, 0, 0, 0, 0, '', ''] : series[k];
+      const set = (e: HTMLElement | null, v: string) => e && (e.textContent = v);
+      set(out.flights, fmt(r[1]));
+      set(out.countries, String(r[2]));
+      set(out.miles, fmt(r[3]));
+      set(out.earth, `${(r[3] / 24901).toFixed(1)}×`);
+      set(out.hours, fmt(r[4]));
+      set(out.airports, String(r[5]));
+      set(out.continents, `${r[6]}/7`);
+      set(out.airlines, String(r[7]));
+      set(out.longest, `${fmt(r[8])} mi`);
+      notes.forEach((n) => (n.textContent = r[9] ? `${r[9]} → ${r[10]}` : ''));
+    };
+
     const show = (s: typeof state) => {
       state = s;
       button.dataset.state = s;
       button.ariaLabel = s === 'playing' ? 'Pause' : s === 'paused' ? 'Play' : 'Replay';
     };
     // Pause first: a finished animation that is only seeked starts to run again.
-    const seek = (t: number) =>
+    const seek = (t: number) => {
       anims().forEach((a) => {
         a.pause();
         a.currentTime = t;
       });
+      stats(t);
+    };
     const pause = () => {
       anims().forEach((a) => a.pause());
       show('paused');
@@ -607,6 +675,7 @@ const highlight =
       if (state !== 'playing') return;
       const t = now();
       range.value = String(t);
+      stats(t);
       if (t >= total) return show('ended');
       requestAnimationFrame(tick);
     };
@@ -642,7 +711,7 @@ const highlight =
   .fly {
     stroke-dasharray: 1;
     stroke-dashoffset: 1;
-    animation: draw 700ms ease-out var(--d) forwards;
+    animation: draw 350ms ease-out var(--d) forwards;
   }
   .pop {
     opacity: 0;
