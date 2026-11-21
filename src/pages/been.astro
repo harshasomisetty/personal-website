@@ -44,8 +44,8 @@ const pts = flights.points as Record<string, [number, number]>;
 // Route replay: each flight draws at its real date, scaled to SPAN ms; CSS animations, which
 // the scrub bar script pauses, plays and seeks. Each line is faint, so a route flown many
 // times ends up brighter.
-const SPAN = 7000;
-const DRAW = 700; // ms for one line to draw
+const SPAN = 4500;
+const DRAW = 500; // ms for one line to draw
 const log = flights.log as [string, string, string][];
 const day = (s: string) => Date.parse(`${s}T00:00:00Z`);
 const t0 = day(log[0][2]);
