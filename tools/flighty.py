@@ -46,7 +46,7 @@ out = {
     'airports': len(visits),
     'airlines': len(carriers),
     'aroundEarth': round(miles / 24901, 1),
-    'longest': {'from': airports[longest[0]][1], 'to': airports[longest[1]][1], 'miles': round(longest[3] * KM_TO_MI)},
+    'longest': {'from': airports[longest[0]][0], 'to': airports[longest[1]][0], 'miles': round(longest[3] * KM_TO_MI)},  # IATA codes
     'topAirports': [{'code': c, 'city': next(v[1] for v in airports.values() if v[0] == c), 'visits': n} for c, n in visits.most_common(5)],
     'topAirlines': [{'name': n, 'flights': k} for n, k in carriers.most_common(5)],
     'points': {v[0]: [round(v[3], 3), round(v[2], 3)] for k, v in airports.items() if v[0] in visits},  # [lon, lat]

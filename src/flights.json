@@ -8,8 +8,8 @@
  "airlines": 33,
  "aroundEarth": 12.6,
  "longest": {
-  "from": "San Francisco",
-  "to": "Singapore",
+  "from": "SFO",
+  "to": "SIN",
   "miles": 8438
  },
  "topAirports": [
