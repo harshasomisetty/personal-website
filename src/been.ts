@@ -63,7 +63,7 @@ export const trips: { when: string; year: number; places: string[] }[] = [
   { year: 2020, when: 'Jun', places: ['Atlanta', 'Houston'] },
   { year: 2020, when: 'Aug', places: ['Houston'] },
   { year: 2021, when: 'Aug', places: ['Hawaii'] },
-  { year: 2022, when: 'Mid', places: ['Canada'] },
+  { year: 2022, when: 'Jul', places: ['Canada'] },
   { year: 2022, when: 'Nov', places: ['Portugal'] },
   { year: 2023, when: 'Jan – Feb', places: ['Turkey'] },
   { year: 2023, when: 'Apr', places: ['Miami', 'Tampa'] },
