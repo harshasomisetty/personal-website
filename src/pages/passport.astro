@@ -198,11 +198,11 @@ const stats = [
   { value: num(flights.flights), label: 'Flights' },
   { value: countryCount, label: 'Countries', amber: true },
   { value: num(flights.miles), label: 'Miles' },
-  { value: flights.airlines, label: 'Airlines' },
+  { value: `${flights.aroundEarth}×`, label: 'Around the Earth' },
   { value: num(flights.hours), label: 'Hours in the air' },
   { value: flights.airports, label: 'Airports' },
   { value: `${continentCount}/7`, label: 'Continents', amber: true },
-  { value: `${flights.aroundEarth}×`, label: 'Around the Earth' },
+  { value: flights.airlines, label: 'Airlines' },
   {
     value: `${num(flights.longest.miles)} mi`,
     label: 'Longest flight',
@@ -210,7 +210,7 @@ const stats = [
   },
 ];
 // A passport-style machine-readable line, padded with < to a fixed width.
-const mrz = `P<BEEN<<${countryCount}<COUNTRIES<<${flights.flights}<FLIGHTS<<${flights.miles}<MILES`.padEnd(72, '<');
+const mrz = `P<PASSPORT<<${countryCount}<COUNTRIES<<${flights.flights}<FLIGHTS<<${flights.miles}<MILES`.padEnd(72, '<');
 
 // Hover a country (or a city in it) in the list and its shape lights up on the map. CSS only.
 // !important: the light-up animations would win over a plain rule.
@@ -224,14 +224,14 @@ const highlight =
 ---
 
 <Base
-  title="Been"
+  title="Passport"
   description={`The ${countryCount} countries and Antarctica that Harsha Somisetty has been to.`}
 >
   <style set:html={highlight} />
   <div class="been">
     <section class="overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-950">
       <header class="flex items-baseline justify-between gap-4 border-b border-neutral-800 px-4 py-3 sm:px-5">
-        <h1 class="font-mono text-sm font-semibold uppercase tracking-[0.2em] text-amber-500">Been</h1>
+        <h1 class="font-mono text-sm font-semibold uppercase tracking-[0.2em] text-amber-500">Passport</h1>
         <p class="font-mono text-xs text-neutral-500">{countryCount} countries and Antarctica</p>
       </header>
       <div class="relative" data-map>
@@ -375,7 +375,9 @@ const highlight =
             >
               <dd
                 class:list={[
-                  'text-xl font-semibold tracking-tight tabular-nums sm:text-2xl',
+                  'font-semibold tracking-tight tabular-nums',
+                  // Row 1 is the headline; row 3 is detail.
+                  i < 3 ? 'text-2xl sm:text-3xl' : i < 6 ? 'text-xl sm:text-2xl' : 'text-lg sm:text-xl',
                   s.amber ? 'text-amber-500' : 'text-neutral-100',
                 ]}
               >
@@ -392,20 +394,30 @@ const highlight =
       </p>
     </section>
 
-    <div class="mt-12 space-y-10">
+    <div class="mt-12 divide-y divide-neutral-800">
       {
         regions.map((region) => {
           const list = places.filter((p) => p.region === region && (!p.territory || p.id === '010'));
+          // With 7+ stamps the title sits in the middle of the second row: after 5 stamps on a
+          // phone (5 a row, title 3 wide), after 4 from sm up (4 a row, title 2 wide). Stamps
+          // have even order values, so an odd order puts the title between two of them.
+          const middle = list.length >= 7;
+          const title = (
+            <>
+              <span class="text-xl font-bold">{region}</span>
+              {region !== 'Antarctica' && <span class="font-mono text-xs text-neutral-500">{list.length}</span>}
+            </>
+          );
           return (
-            <section>
-              <h2 class="mb-4 flex items-baseline justify-center gap-2 border-b border-neutral-800 pb-2">
-                <span class="text-xl font-bold">{region}</span>
-                {region !== 'Antarctica' && (
-                  <span class="font-mono text-xs text-neutral-500">{list.length}</span>
-                )}
-              </h2>
+            <section class="py-10 first:pt-0 last:pb-0">
+              {!middle && <h2 class="mb-4 flex items-baseline justify-center gap-2">{title}</h2>}
               <ul class="relative flex flex-wrap justify-center gap-y-4">
-                {list.map((p) => {
+                {middle && (
+                  <li class="order-11 flex w-3/5 items-center justify-center sm:order-9 sm:w-1/2">
+                    <h2 class="flex items-baseline gap-2">{title}</h2>
+                  </li>
+                )}
+                {list.map((p, i) => {
                   // A territory shows under its country (Puerto Rico under the United States).
                   const subs = [
                     ...(p.cities ?? []),
@@ -421,7 +433,7 @@ const highlight =
                     </p>
                   );
                   return subs.length > 1 ? (
-                    <li class="stamp-cell w-1/5 px-0.5 sm:w-1/4 sm:px-2" data-c={p.id}>
+                    <li class="stamp-cell w-1/5 px-0.5 sm:w-1/4 sm:px-2" style={`order:${2 * i}`} data-c={p.id}>
                       {/* One open at a time (name). The panel has no top, so it sits right under its
                           stamp; left/right come from the list (the ul), so no stamp moves. */}
                       <details class="group" name="stamp">
@@ -445,7 +457,7 @@ const highlight =
                       </details>
                     </li>
                   ) : (
-                    <li class="stamp-cell w-1/5 px-0.5 sm:w-1/4 sm:px-2" data-c={p.id}>
+                    <li class="stamp-cell w-1/5 px-0.5 sm:w-1/4 sm:px-2" style={`order:${2 * i}`} data-c={p.id}>
                       <div class="stamp-wrap mx-auto max-w-[120px]">
                         <Stamp name={p.name} date={st.date} foot={st.foot} />
                         {caption}

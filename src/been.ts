@@ -1,4 +1,4 @@
-// Places for /been. id = ISO 3166 numeric code (the world-atlas map ids).
+// Places for /passport. id = ISO 3166 numeric code (the world-atlas map ids).
 // dot = [lon, lat] for places too small to see on the map.
 export type Place = {
   name: string;
@@ -105,7 +105,7 @@ export const trips: { when: string; year: number; places: string[] }[] = [
   { year: 2026, when: 'Nov', places: ['Puerto Rico'] },
 ].reverse();
 
-// Travel that Flighty does not have, for the route replay on /been: the place lights up on
+// Travel that Flighty does not have, for the route replay on /passport: the place lights up on
 // the date, and a boat trip also draws a line ([lon, lat] points, approximate).
 export const voyages: { date: string; place: string; boat?: [number, number][] }[] = [
   { date: '2022-07-01', place: 'Canada' },
