@@ -1,6 +1,6 @@
 ---
 import '@/styles/global.css';
-import { business, facebookDomainVerification, tagline } from '@/site';
+import { business, facebookDomainVerification, roles, tagline } from '@/site';
 
 interface Props {
   title?: string;
@@ -33,8 +33,11 @@ const canonical = new URL(path, Astro.site);
     <meta property="og:site_name" content={business.founder} />
     <meta property="og:locale" content="en_US" />
     <meta property="og:type" content="website" />
-    <meta property="og:image" content={new URL('/avatar.jpg', Astro.site)} />
-    <meta property="og:image:alt" content={business.founder} />
+    <!-- public/og.png comes from tools/og.mjs; re-run it after roles, photo, or trips change. -->
+    <meta property="og:image" content={new URL('/og.png', Astro.site)} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={`${business.founder}: ${roles.join(', ')}`} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title ?? business.founder} />
     {
